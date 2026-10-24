@@ -2,6 +2,7 @@
 // ============================================================
 //  🔑  PUT YOUR SUPABASE KEYS HERE (same as booking.js)
 // ============================================================
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const SUPABASE_URL = 'https://agpztpuugtifmnrnrhgx.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFncHp0cHV1Z3RpZm1ucm5yaGd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NTg0MzMsImV4cCI6MjEwODMzNDQzM30.jFZWhHc2bT7PnPRhtv6GpSZdZz-yvTwmAckgF8vf-og';
 // ============================================================
@@ -122,7 +123,6 @@ function renderDay(bookings) {
       card.innerHTML = `<strong>${escapeHtml(match.name)}</strong><span>${escapeHtml(match.service)}</span>`;
       slot.appendChild(card);
 
-      // Action buttons
       const actions = document.createElement('div');
       actions.className = 'booking-actions';
       if (match.status !== 'confirmed') {
