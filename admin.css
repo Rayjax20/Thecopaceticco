@@ -10,7 +10,7 @@
   color: #f1eadb;
   font-family: 'DM Sans', sans-serif;
 }
-.admin-login { display: none; } /* shown by JS when no session */
+.admin-dash[hidden] { display: none; }
 
 .login-card {
   background: #0d2b1e;
@@ -87,6 +87,18 @@
   max-width: 1200px;
   margin: 0 auto;
 }
+
+.dashboard-error {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid #a04a3a;
+  border-radius: 6px;
+  background: #3a1a1a;
+  color: #f1eadb;
+}
+
+.dashboard-error[hidden] { display: none; }
 
 /* ---------- Section heads ---------- */
 .section-head .eyebrow {

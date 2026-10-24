@@ -39,6 +39,7 @@
   </header>
 
   <div class="dash-layout">
+    <p id="dashboardError" class="dashboard-error" role="alert" hidden></p>
     <!-- Today's schedule -->
     <section class="dash-main">
       <div class="section-head"><p class="eyebrow" id="todayLabel">TODAY</p><h2>Today's <em>Schedule</em></h2></div>
@@ -64,10 +65,35 @@
       <div id="serviceList" class="service-list">
         <!-- services render here -->
       </div>
+
+      <!-- ============ BLACKOUT WINDOWS ============ -->
+      <div class="section-head"><p class="eyebrow">AVAILABILITY</p><h3>Block <em>Times</em></h3></div>
+      <p class="dash-note">Block any time range so it won't show as available for booking.</p>
+
+      <form id="blackoutForm" class="blackout-form">
+        <label>Date
+          <input id="blackoutDate" type="date" required>
+        </label>
+        <label>Start time <em>(e.g. 12:03)</em>
+          <input id="blackoutStart" type="text" placeholder="12:03" required>
+        </label>
+        <label>End time <em>(e.g. 13:57)</em>
+          <input id="blackoutEnd" type="text" placeholder="13:57" required>
+        </label>
+        <label>Reason <em>(optional)</em>
+          <input id="blackoutReason" type="text" placeholder="lunch, errands...">
+        </label>
+        <button class="btn small" type="submit">Block Time</button>
+      </form>
+
+      <div id="blackoutList" class="blackout-list">
+        <!-- blackouts render here -->
+      </div>
     </aside>
   </div>
 </div>
 
-<script type="module" src="admin.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
+<script src="admin.js?v=202610240517"></script>
 </body>
 </html>
