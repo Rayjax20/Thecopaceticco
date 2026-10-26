@@ -122,9 +122,16 @@ function renderDay(bookings) {
     label.textContent = formatTime(match.time);
     slot.appendChild(label);
 
+    // ---- Booking card: name, phone (tap to call), service, add-ons, notes ----
     const card = document.createElement('div');
     card.className = 'booking-card';
-    card.innerHTML = `<strong>${escapeHtml(match.name)}</strong><span>${escapeHtml(match.service)}</span>`;
+    card.innerHTML = `
+      <strong>${escapeHtml(match.client_name)}</strong>
+      <a class="booking-phone" href="tel:${String(match.phone || '').replace(/\D/g, '')}">${escapeHtml(match.phone || 'No number')}</a>
+      <span class="booking-service">${escapeHtml(match.service_name || '')}</span>
+      ${renderAddons(match.addons)}
+      ${match.notes ? `<em class="booking-notes">"${escapeHtml(match.notes)}"</em>` : ''}
+    `;
     slot.appendChild(card);
 
     // Status control — Rayvon moves each booking through the lifecycle
@@ -143,6 +150,13 @@ function renderDay(bookings) {
 
     container.appendChild(slot);
   });
+}
+
+// Render add-ons as small chips under the main service
+function renderAddons(addons) {
+  if (!addons || !addons.length) return '';
+  const chips = addons.map((a) => `<span class="booking-addon">${escapeHtml(a)}</span>`).join('');
+  return `<div class="booking-addons">${chips}</div>`;
 }
 
 function actionBtn(text, status, id) {
