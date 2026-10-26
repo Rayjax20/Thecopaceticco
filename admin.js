@@ -146,6 +146,8 @@ function renderDay(bookings) {
     if (match.status !== 'cancelled') {
       actions.appendChild(actionBtn('Cancel', 'cancelled', match.id));
     }
+    // NEW: Delete button
+    actions.appendChild(deleteBtn(match.id));
     slot.appendChild(actions);
 
     container.appendChild(slot);
@@ -170,6 +172,27 @@ function actionBtn(text, status, id) {
       .eq('id', id);
     if (error) {
       alert('Could not update booking.');
+      console.error(error);
+    } else {
+      await loadDashboard();
+    }
+  });
+  return btn;
+}
+
+// NEW: Delete a booking entirely
+function deleteBtn(id) {
+  const btn = document.createElement('button');
+  btn.className = 'act-btn act-danger';
+  btn.textContent = 'Delete';
+  btn.addEventListener('click', async () => {
+    if (!confirm('Delete this booking permanently?')) return;
+    const { error } = await sb
+      .from('bookings')
+      .delete()
+      .eq('id', id);
+    if (error) {
+      alert('Could not delete booking.');
       console.error(error);
     } else {
       await loadDashboard();

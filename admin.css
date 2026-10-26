@@ -339,3 +339,10 @@
   background: #e7f0e7; color: #2f5d3a;
   font-size: 11px; padding: 2px 8px; border-radius: 10px;
 }
+.act-danger {
+  background: #b3261e;
+  color: white;
+}
+.act-danger:hover {
+  background: #8f1d16;
+}
