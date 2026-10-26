@@ -201,7 +201,7 @@ form.addEventListener('submit', async (e) => {
 
   const booking = {
     client_name: nameEl.value.trim(),
-    contact: contactEl.value.trim(),
+    phone: contactEl.value.trim(),   // ✅ FIXED: writes to `phone`, not `contact`
     service_name: services.map((s) => s.value).join(' + '),
     addons: addOnInputs.filter((i) => i.checked).map((i) => i.value),
     date: dateEl.value,
