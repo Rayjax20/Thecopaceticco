@@ -1,6 +1,6 @@
 // booking.js — service-based appointment availability + Supabase insert
 // ============================================================
-//  🔑  PUT YOUR SUPABASE KEYS HERE
+//  🔑  SUPABASE KEYS
 // ============================================================
 const SUPABASE_URL = 'https://agpztpuugtifmnrnrhgx.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFncHp0cHV1Z3RpZm1ucm5yaGd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NTg0MzMsImV4cCI6MjEwODMzNDQzM30.jFZWhHc2bT7PnPRhtv6GpSZdZz-yvTwmAckgF8vf-og';
@@ -13,13 +13,14 @@ const CONFIG = {
   OPEN_HOUR: 8,       // 8:00 AM
   CLOSE_HOUR: 20,     // 8:00 PM
   SLOT_INTERVAL: 15,  // 15-min steps
-  DAYS_OPEN: [0,1,2,3,4,5,6], // every day
-  BUFFER_MIN: 10,     // [FOOTPRINT] solo barber pad — keeps cuts from running into each other
+  DAYS_OPEN: [0,1,2,3,4,5,6],
+  BUFFER_MIN: 10,     // [FOOTPRINT] solo barber pad
 };
 
 // ---- Grab form elements -------------------------------------
 const form = document.getElementById('bookingForm');
 const nameEl = document.getElementById('name');
+const contactEl = document.getElementById('contact');
 const mainServiceInputs = [...form.querySelectorAll('input[name="mainService"]')];
 const addOnInputs = [...form.querySelectorAll('input[name="addOn"]')];
 const dateEl = document.getElementById('date');
@@ -42,7 +43,6 @@ async function loadServices() {
   SERVICES = Object.fromEntries(
     data.map((s) => [`${s.name} — $${s.price}`, s.duration_min])
   );
-  // Longest cut = max duration — this drives the whole schedule check
   CONFIG.LONGEST_CUT = Math.max(...data.map((s) => s.duration_min));
   updateServiceSummary();
 }
@@ -51,7 +51,6 @@ async function loadServices() {
 const today = new Date();
 dateEl.min = today.toISOString().split('T')[0];
 
-// ---- Reset available times until a service and date are selected
 function resetTimeOptions(message) {
   timeEl.innerHTML = '';
   const opt = document.createElement('option');
@@ -64,7 +63,8 @@ function resetTimeOptions(message) {
 function selectedServices() {
   const mainService = mainServiceInputs.find((input) => input.checked);
   if (!mainService) return [];
-  if (mainService.value === 'The Full Copacetic — $60') return [mainService];
+  // Full Copacetic already includes everything — no add-ons stack on it
+  if (mainService.value.startsWith('The Full Copacetic')) return [mainService];
   return [mainService, ...addOnInputs.filter((input) => input.checked)];
 }
 
@@ -74,8 +74,8 @@ function updateServiceSummary() {
     serviceSummary.textContent = 'Choose a main service to see your appointment length and total.';
     return;
   }
-  if (services[0].value === 'The Full Copacetic — $60') {
-    serviceSummary.textContent = 'The Full Copacetic includes all services · 60 minutes · $60';
+  if (services[0].value.startsWith('The Full Copacetic')) {
+    serviceSummary.textContent = 'The Full Copacetic includes all services · 60 minutes · $75';
     return;
   }
   const duration = services.reduce((t, s) => t + Number(s.dataset.duration), 0);
@@ -89,22 +89,6 @@ function getServiceDuration(service) {
 
 // ---- Blackout windows from the admin page --------------------
 let blackouts = [];
-async function loadBlackouts(date) {
-  const { data, error } = await supabaseClient
-    .from('blackouts')
-    .select('start_time, end_time')
-    .eq('date', date);
-  if (error) {
-    console.error('Could not load blackouts:', error);
-    blackouts = [];
-    return;
-  }
-  blackouts = (data || []).map((b) => ({
-    start: timeToMinutes(b.start_time),
-    end: timeToMinutes(b.end_time),
-  }));
-}
-
 function overlapsBlackout(start, end) {
   return blackouts.some((b) => start < b.end && b.start < end);
 }
@@ -125,9 +109,8 @@ async function updateAvailableTimes() {
   resetTimeOptions('click the arrow to choose a time…');
   availabilityMessage.textContent = 'Checking availability…';
 
-  // Load bookings + blackouts in parallel
   const [bookingsRes, blackoutRes] = await Promise.all([
-    supabaseClient.from('bookings').select('time, service, status').eq('date', dateEl.value),
+    supabaseClient.from('bookings').select('time, service_name, status').eq('date', dateEl.value),
     supabaseClient.from('blackouts').select('start_time, end_time').eq('date', dateEl.value),
   ]);
   if (request !== availabilityRequest) return;
@@ -139,12 +122,12 @@ async function updateAvailableTimes() {
     return;
   }
 
+  // [FOOTPRINT] only non-cancelled bookings occupy a slot
   const bookings = (bookingsRes.data || [])
-    .filter((b) => b.status !== 'done' && b.status !== 'no_show')
+    .filter((b) => b.status !== 'cancelled')
     .map((b) => ({
       start: timeToMinutes(b.time),
-      // [FOOTPRINT] each booking reserves its full block, not just its start
-      end: timeToMinutes(b.time) + getServiceDuration(b.service) + CONFIG.BUFFER_MIN,
+      end: timeToMinutes(b.time) + getServiceDuration(b.service_name) + CONFIG.BUFFER_MIN,
     }))
     .filter((b) => b.start !== null);
 
@@ -162,9 +145,18 @@ async function updateAvailableTimes() {
   const open = CONFIG.OPEN_HOUR * 60;
   const close = CONFIG.CLOSE_HOUR * 60;
 
-  // [FOOTPRINT] the candidate's whole block must be clear of bookings AND blackouts
+  const selectedDate = new Date(dateEl.value + 'T00:00:00');
+  const now = new Date();
+  const isToday =
+    selectedDate.getFullYear() === now.getFullYear() &&
+    selectedDate.getMonth() === now.getMonth() &&
+    selectedDate.getDate() === now.getDate();
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
   const footprint = duration + CONFIG.BUFFER_MIN;
   for (let start = open; start + footprint <= close; start += CONFIG.SLOT_INTERVAL) {
+    if (isToday && start <= nowMinutes) continue;
+
     const end = start + footprint;
     const overlapsBooking = bookings.some((b) => start < b.end && b.start < end);
     if (overlapsBooking || overlapsBlackout(start, end)) continue;
@@ -187,7 +179,7 @@ dateEl.addEventListener('change', updateAvailableTimes);
 form.addEventListener('change', (event) => {
   if (!event.target.matches('input[name="mainService"], input[name="addOn"]')) return;
   if (event.target.name === 'mainService') {
-    const fullCopacetic = event.target.value === 'The Full Copacetic — $60' && event.target.checked;
+    const fullCopacetic = event.target.value.startsWith('The Full Copacetic') && event.target.checked;
     addOnOptions.disabled = fullCopacetic;
     addOnInputs.forEach((input) => { if (fullCopacetic) input.checked = false; });
   }
@@ -200,13 +192,24 @@ form.addEventListener('submit', async (e) => {
   e.preventDefault();
   if (!timeEl.value) return;
 
+  const services = selectedServices();
+  const durationMin = services.reduce((t, s) => t + Number(s.dataset.duration), 0);
+
+  // Build real timestamps so the overlap check and dashboard stay honest
+  const startsAt = new Date(`${dateEl.value}T${timeEl.value}:00`);
+  const endsAt = new Date(startsAt.getTime() + (durationMin + CONFIG.BUFFER_MIN) * 60000);
+
   const booking = {
-    name: nameEl.value.trim(),
-    service: selectedServices().map((s) => s.value).join(' + '),
+    client_name: nameEl.value.trim(),
+    contact: contactEl.value.trim(),
+    service_name: services.map((s) => s.value).join(' + '),
+    addons: addOnInputs.filter((i) => i.checked).map((i) => i.value),
     date: dateEl.value,
     time: timeEl.value,
+    starts_at: startsAt.toISOString(),
+    ends_at: endsAt.toISOString(),
     notes: notesEl.value.trim(),
-    status: 'pending',
+    status: 'confirmed',
   };
 
   const { error } = await supabaseClient.from('bookings').insert(booking);
@@ -214,7 +217,7 @@ form.addEventListener('submit', async (e) => {
     alert('Something went wrong — please try again or text Rayvon directly.');
     console.error(error);
   } else {
-    alert('Booking request sent! Rayvon will confirm your time by text.');
+    alert('You\'re booked! Rayvon will reach out if anything changes. See you at the chair.');
     form.reset();
     addOnOptions.disabled = false;
     resetTimeOptions('Choose a service and date first');
@@ -238,5 +241,5 @@ function formatTime(minutes) {
   return `${(h % 12 || 12)}:${String(m).padStart(2, '0')} ${suffix}`;
 }
 
-// ---- Boot: load services first, then go ---------------------
+// ---- Boot ---------------------------------------------------
 loadServices();

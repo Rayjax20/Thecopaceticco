@@ -8,10 +8,9 @@ const loginForm = document.getElementById('loginForm');
 const loginError = document.getElementById('loginError');
 
 const STATUS = {
-  pending:   'gold',
   confirmed: 'green',
-  done:      'muted',
-  no_show:   'red',
+  completed: 'muted',
+  cancelled: 'red',
 };
 
 (async function init() {
@@ -116,7 +115,7 @@ function renderDay(bookings) {
 
   bookings.forEach((match) => {
     const slot = document.createElement('div');
-    slot.className = `time-slot has-booking ${STATUS[match.status] || 'gold'}`;
+    slot.className = `time-slot has-booking ${STATUS[match.status] || 'green'}`;
 
     const label = document.createElement('span');
     label.className = 'slot-time';
@@ -128,16 +127,17 @@ function renderDay(bookings) {
     card.innerHTML = `<strong>${escapeHtml(match.name)}</strong><span>${escapeHtml(match.service)}</span>`;
     slot.appendChild(card);
 
+    // Status control — Rayvon moves each booking through the lifecycle
     const actions = document.createElement('div');
     actions.className = 'booking-actions';
     if (match.status !== 'confirmed') {
       actions.appendChild(actionBtn('Confirm', 'confirmed', match.id));
     }
-    if (match.status !== 'done') {
-      actions.appendChild(actionBtn('Done', 'done', match.id));
+    if (match.status !== 'completed') {
+      actions.appendChild(actionBtn('Completed', 'completed', match.id));
     }
-    if (match.status !== 'no_show') {
-      actions.appendChild(actionBtn('No-Show', 'no_show', match.id));
+    if (match.status !== 'cancelled') {
+      actions.appendChild(actionBtn('Cancel', 'cancelled', match.id));
     }
     slot.appendChild(actions);
 
@@ -202,11 +202,13 @@ function renderServices(services) {
 }
 
 function renderStats(todays) {
-  const pending = todays.filter((b) => b.status === 'pending').length;
   const confirmed = todays.filter((b) => b.status === 'confirmed').length;
+  const completed = todays.filter((b) => b.status === 'completed').length;
+  const cancelled = todays.filter((b) => b.status === 'cancelled').length;
   document.getElementById('statToday').textContent = todays.length;
-  document.getElementById('statPending').textContent = pending;
   document.getElementById('statConfirmed').textContent = confirmed;
+  document.getElementById('statCompleted').textContent = completed;
+  document.getElementById('statCancelled').textContent = cancelled;
 }
 
 // ============================================================
