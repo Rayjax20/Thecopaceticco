@@ -1,12 +1,14 @@
-/* admin.css — Copacetic Co. staff dashboard (revamped beige) */
+/* admin.css — Copacetic Co. staff dashboard (beige + green accent) */
 
 :root {
   --ink: #2b2117;          /* dark brown text */
   --pine: #e9e0d2;         /* main beige background */
   --pine-2: #f4eee3;       /* card background (lighter beige) */
   --line: #cbbfa9;         /* borders */
-  --gold: #8a6d3b;         /* accent (warm tan/bronze) */
+  --gold: #8a6d3b;         /* warm tan accent */
   --gold-soft: #a98b57;
+  --green: #2e7d32;        /* Copacetic green accent */
+  --green-soft: #4d8a5c;
   --cream: #3a2f22;        /* text — dark brown on beige */
   --muted: #8a7a63;        /* secondary text */
   --red: #b3261e;
@@ -21,8 +23,8 @@
   align-items: center;
   justify-content: center;
   background:
-    radial-gradient(1200px 600px at 80% -10%, rgba(138,109,59,.12), transparent 60%),
-    radial-gradient(900px 500px at 10% 110%, rgba(138,109,59,.10), transparent 55%),
+    radial-gradient(1200px 600px at 80% -10%, rgba(46,125,50,.12), transparent 60%),
+    radial-gradient(900px 500px at 10% 110%, rgba(46,125,50,.10), transparent 55%),
     var(--pine);
   color: var(--cream);
   font-family: 'DM Sans', sans-serif;
@@ -42,7 +44,7 @@
 .login-card img {
   width: 76px; height: 76px; border-radius: 50%;
   margin-bottom: 1.1rem;
-  border: 2px solid var(--gold);
+  border: 2px solid var(--green);
   padding: 3px;
 }
 .login-card h1 {
@@ -52,7 +54,7 @@
   color: var(--cream);
   margin: 0 0 1.5rem;
 }
-.login-card h1 em { font-family: 'Playfair Display', serif; font-style: italic; color: var(--gold); }
+.login-card h1 em { font-family: 'Playfair Display', serif; font-style: italic; color: var(--green); }
 
 .login-card form { display: grid; gap: 1rem; text-align: left; }
 .login-card label { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
@@ -67,18 +69,18 @@
   margin-top: 0.3rem;
   transition: border-color .2s;
 }
-.login-card input:focus { border-color: var(--gold); outline: none; }
+.login-card input:focus { border-color: var(--green); outline: none; }
 .login-card .btn { width: 100%; margin-top: 0.5rem; }
 
 .login-error { color: var(--red); font-size: 0.85rem; margin: 0.5rem 0 0; }
-.back-link { display: block; margin-top: 1.25rem; color: var(--gold); font-size: 0.85rem; text-decoration: none; }
+.back-link { display: block; margin-top: 1.25rem; color: var(--green); font-size: 0.85rem; text-decoration: none; }
 .back-link:hover { text-decoration: underline; }
 
 /* ---------- Dashboard shell ---------- */
 .admin-dash {
   min-height: 100vh;
   background:
-    radial-gradient(1000px 500px at 90% -5%, rgba(138,109,59,.08), transparent 55%),
+    radial-gradient(1000px 500px at 90% -5%, rgba(46,125,50,.08), transparent 55%),
     var(--pine);
   color: var(--cream);
   font-family: 'DM Sans', sans-serif;
@@ -102,12 +104,12 @@
   letter-spacing: 2px;
   color: var(--cream);
 }
-.dash-brand span { color: var(--gold); }
+.dash-brand span { color: var(--green); }
 .dash-brand small { font-family: 'DM Sans', sans-serif; font-size: 0.7rem; color: var(--muted); letter-spacing: 2px; margin-left: 0.5rem; }
 .dash-actions { display: flex; gap: 0.75rem; }
 
 .btn {
-  background: var(--gold);
+  background: var(--green);
   color: #f4eee3;
   border: none;
   padding: 0.6rem 1.2rem;
@@ -117,7 +119,7 @@
   cursor: pointer;
   transition: transform .15s, background .2s;
 }
-.btn:hover { background: var(--gold-soft); transform: translateY(-1px); }
+.btn:hover { background: var(--green-soft); transform: translateY(-1px); }
 .btn.small { font-size: 0.8rem; padding: 0.45rem 0.95rem; }
 .btn.ghost { background: transparent; color: var(--cream); border: 1px solid var(--line); }
 .btn.ghost:hover { background: rgba(43,33,23,.05); }
@@ -157,7 +159,7 @@
   color: var(--cream);
   margin: 0.25rem 0 1rem;
 }
-.section-head h2 em, .section-head h3 em { font-family: 'Playfair Display', serif; font-style: italic; color: var(--gold); }
+.section-head h2 em, .section-head h3 em { font-family: 'Playfair Display', serif; font-style: italic; color: var(--green); }
 
 /* ---------- Today's schedule ---------- */
 .day-schedule { display: grid; gap: 0.5rem; }
@@ -174,7 +176,7 @@
   padding: 0.5rem 0.75rem;
   transition: border-color .2s, transform .15s;
 }
-.time-slot:hover { transform: translateX(2px); }
+.time-slot:hover { transform: translateX(2px); border-color: var(--green); }
 .slot-time {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 1.15rem;
@@ -184,14 +186,14 @@
 }
 .slot-empty { color: var(--line); font-size: 1rem; justify-self: center; }
 
-.time-slot.has-booking { border-color: var(--gold); }
+.time-slot.has-booking { border-color: var(--green); }
 .time-slot.has-booking.green   { background: #e8f2e4; border-color: #5a9a5a; }  /* confirmed */
 .time-slot.has-booking.muted   { background: #e4ecf4; border-color: #5a8ab0; }  /* completed — blue */
 .time-slot.has-booking.red     { background: #f6e3e0; border-color: #c05a4a; }  /* cancelled */
 
 .booking-card { display: grid; gap: 0.15rem; padding-left: 0.5rem; }
 .booking-card strong { font-family: 'DM Sans', sans-serif; font-weight: 600; color: var(--cream); font-size: 0.95rem; }
-.booking-card span { font-family: 'DM Sans', sans-serif; color: var(--gold); font-size: 0.8rem; }
+.booking-card span { font-family: 'DM Sans', sans-serif; color: var(--green); font-size: 0.8rem; }
 
 /* ---------- Booking status actions ---------- */
 .booking-actions {
@@ -213,7 +215,7 @@
   cursor: pointer;
   transition: border-color .2s, color .2s, background .2s;
 }
-.act-btn:hover { border-color: var(--gold); color: var(--gold); }
+.act-btn:hover { border-color: var(--green); color: var(--green); }
 .act-btn.confirm { background: #2e7d32; color: #fff; border-color: #2e7d32; }
 .act-btn.confirm:hover { background: #256b29; }
 .act-btn.completed { background: #1565c0; color: #fff; border-color: #1565c0; }
@@ -235,8 +237,8 @@
   gap: 0.15rem;
   transition: border-color .2s, transform .15s;
 }
-.week-day:hover { border-color: var(--gold); transform: translateY(-2px); }
-.week-day strong { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; color: var(--gold); }
+.week-day:hover { border-color: var(--green); transform: translateY(-2px); }
+.week-day strong { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; color: var(--green); }
 .week-day span { font-family: 'Bebas Neue', sans-serif; font-size: 1.25rem; color: var(--cream); }
 .week-day em { font-family: 'DM Sans', sans-serif; font-size: 0.65rem; color: var(--muted); }
 
@@ -250,7 +252,7 @@
   padding: 0.85rem 0;
   transition: border-color .2s;
 }
-.stat:hover { border-color: var(--gold); }
+.stat:hover { border-color: var(--green); }
 .stat strong { font-family: 'Bebas Neue', sans-serif; font-size: 1.7rem; color: var(--cream); display: block; }
 .stat span { font-family: 'DM Sans', sans-serif; font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
 
@@ -266,9 +268,9 @@
   padding: 0.6rem 0.8rem;
   transition: border-color .2s;
 }
-.service-item:hover { border-color: var(--gold); }
+.service-item:hover { border-color: var(--green); }
 .service-item span { font-family: 'DM Sans', sans-serif; color: var(--cream); font-size: 0.85rem; }
-.service-item strong { font-family: 'Bebas Neue', sans-serif; color: var(--gold); font-size: 1.05rem; }
+.service-item strong { font-family: 'Bebas Neue', sans-serif; color: var(--green); font-size: 1.05rem; }
 
 /* ---------- Blackout form ---------- */
 .dash-note { color: var(--muted); font-size: 0.8rem; margin: -0.5rem 0 1rem; }
@@ -293,7 +295,7 @@
   margin-top: 0.3rem;
   transition: border-color .2s;
 }
-.blackout-form input:focus { border-color: var(--gold); outline: none; }
+.blackout-form input:focus { border-color: var(--green); outline: none; }
 .blackout-form .btn { margin-top: 0.25rem; }
 
 /* ---------- Blackout list ---------- */
