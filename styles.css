@@ -135,7 +135,8 @@ nav {
 .intro h2,
 .story h2,
 .booking h2,
-.contact h2 {
+.contact h2,
+.where h2 {
   font-family: 'Bebas Neue';
   font-weight: 400;
   line-height: .9;
@@ -148,7 +149,8 @@ nav {
 .section-head em,
 .intro em,
 .story em,
-.booking em {
+.booking em,
+.where em {
   font-family: 'Playfair Display';
   font-weight: 600;
   text-transform: none;
@@ -192,11 +194,9 @@ nav {
   object-fit: cover;
 }
 
-/* ---------- 7. Ticker strip ---------- */
+/* ---------- 7. Ticker strip (revolving) ---------- */
 .ticker {
   display: flex;
-  justify-content: space-around;
-  gap: 20px;
   padding: 18px 4vw;
   background: var(--gold);
   color: #0a160f;
@@ -206,11 +206,29 @@ nav {
   overflow: hidden;
 }
 
+.ticker-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 120px;
+  animation: ticker-scroll 30s linear infinite;
+}
+
+.ticker:hover .ticker-inner {
+  animation-play-state: paused;
+}
+
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+
 /* ---------- 8. Intro section ---------- */
 .intro,
 .story,
 .booking,
-.contact {
+.contact,
+.where {
   padding: 110px 7vw;
 }
 
@@ -404,7 +422,7 @@ nav {
   margin-top: 35px;
 }
 
-/* ---------- 13. Booking form ---------- */
+/* ---------- 13. Booking CTA (form moved to /booking.html) ---------- */
 .booking {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -427,168 +445,49 @@ nav {
   letter-spacing: 1px;
 }
 
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  background: #fff;
-  padding: 32px;
-}
-
-label {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  font-weight: 700;
-}
-
-.service-options {
-  display: grid;
-  gap: 10px;
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
-
-.service-options legend {
-  margin-bottom: 10px;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  font-weight: 700;
-}
-
-.service-option {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  border: 1px solid #ccd0c8;
-  background: #faf8f2;
-  cursor: pointer;
+.pay-note {
+  margin-top: 28px;
   font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0;
-  text-transform: none;
+  color: #102016;
+  max-width: 480px;
 }
 
-.service-option input {
-  flex: 0 0 auto;
-  width: 18px;
-  height: 18px;
-  margin: 0;
-  padding: 0;
-  border: 2px solid #8a9488;
-  background: #fff;
-  accent-color: #315b3d;
+.pay-note strong {
+  color: #315b3d;
 }
 
-.service-option input[type="radio"] {
-  appearance: none;
+/* ---------- 13b. Where to Go section ---------- */
+.where {
   display: grid;
-  place-content: center;
-  border-radius: 50%;
+  grid-template-columns: 1fr auto;
+  gap: 6vw;
+  align-items: center;
+  background: var(--green);
 }
 
-.service-option input[type="radio"]::before {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #315b3d;
-  content: "";
-  transform: scale(0);
-  transition: transform 120ms ease-in-out;
+.where .section-head h2 {
+  font-size: clamp(50px, 6vw, 90px);
 }
 
-.service-option input[type="radio"]:checked::before {
-  transform: scale(1);
+.where p {
+  color: #c1c7bc;
+  line-height: 1.8;
+  max-width: 560px;
 }
 
-.service-option input[type="checkbox"] {
-  appearance: none;
-  display: grid;
-  place-content: center;
-  border-radius: 4px;
+.where .btn {
+  background: var(--gold);
+  color: #07130d;
+  padding: 18px 30px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  border: 0;
+  cursor: pointer;
 }
 
-.service-option input[type="checkbox"]::before {
-  width: 9px;
-  height: 5px;
-  border: solid #fff;
-  border-width: 0 0 2px 2px;
-  content: "";
-  transform: rotate(-45deg) scale(0);
-}
-
-.service-option input[type="checkbox"]:checked {
-  border-color: #315b3d;
-  background: #315b3d;
-}
-
-.service-option input[type="checkbox"]:checked::before {
-  transform: rotate(-45deg) scale(1);
-}
-
-.service-option:has(input:checked) {
-  border-color: #315b3d;
-  background: #eef3eb;
-}
-
-.add-on-options:disabled {
-  opacity: 0.55;
-}
-
-.service-option input:focus-visible {
-  outline: 3px solid #c9a665;
-  outline-offset: 2px;
-}
-
-.service-option span {
-  display: grid;
-  gap: 3px;
-}
-
-.service-option small {
-  color: #536257;
-  font-size: 12px;
-  font-weight: 400;
-}
-
-input,
-select,
-textarea {
-  font: inherit;
-  font-size: 15px;
-  padding: 14px;
-  border: 1px solid #ccd0c8;
-  background: #faf8f2;
-  color: #132016;
-}
-
-textarea {
-  min-height: 90px;
-  resize: vertical;
-}
-
-.split {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-
-.availability-message {
-  margin: -8px 0 0;
-  color: #536257;
-  font-size: 13px;
-}
-
-form small {
-  color: #6b746c;
-  line-height: 1.5;
+.where .btn:hover {
+  background: #d9b877;
 }
 
 /* ---------- 14. Contact ---------- */
@@ -684,14 +583,16 @@ footer {
   .work,
   .story,
   .booking,
-  .contact {
+  .contact,
+  .where {
     padding: 75px 22px;
   }
 
   .intro,
   .story,
   .booking,
-  .contact {
+  .contact,
+  .where {
     grid-template-columns: 1fr;
   }
 
