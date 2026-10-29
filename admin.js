@@ -163,7 +163,7 @@ function renderAddons(addons) {
 
 function actionBtn(text, status, id) {
   const btn = document.createElement('button');
-  btn.className = 'act-btn';
+  btn.className = `act-btn ${status}`;
   btn.textContent = text;
   btn.addEventListener('click', async () => {
     const { error } = await sb
@@ -304,6 +304,18 @@ async function loadBlackouts(date) {
   });
 }
 
+// Convert "6:45 PM" → "18:45" so stored data stays 24-hour
+function parseAmPmTo24(input) {
+  const m = /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i.exec(input.trim());
+  if (!m) return null;
+  let h = Number(m[1]);
+  const min = m[2];
+  const meridiem = m[3].toUpperCase();
+  if (meridiem === 'PM' && h !== 12) h += 12;
+  if (meridiem === 'AM' && h === 12) h = 0;
+  return `${String(h).padStart(2, '0')}:${min}`;
+}
+
 // Save a new blackout
 async function saveBlackout(e) {
   e.preventDefault();
@@ -317,9 +329,16 @@ async function saveBlackout(e) {
     return;
   }
 
+  const start24 = parseAmPmTo24(start);
+  const end24 = parseAmPmTo24(end);
+  if (!start24 || !end24) {
+    alert('Use AM/PM format, e.g. 6:45 PM');
+    return;
+  }
+
   const { error } = await sb
     .from('blackouts')
-    .insert({ date, start_time: start, end_time: end, reason });
+    .insert({ date, start_time: start24, end_time: end24, reason });
 
   if (error) {
     alert('Could not save blackout.');
