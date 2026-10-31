@@ -366,6 +366,25 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
   location.reload();
 });
 
+function showAdminView(view) {
+  document.querySelectorAll('[data-admin-panel]').forEach((panel) => {
+    panel.classList.toggle('active', panel.dataset.adminPanel === view);
+  });
+  document.querySelectorAll('[data-admin-view]').forEach((button) => {
+    button.classList.toggle('active', button.dataset.adminView === view);
+  });
+}
+
+document.querySelectorAll('[data-admin-view]').forEach((button) => {
+  button.addEventListener('click', () => showAdminView(button.dataset.adminView));
+});
+document.querySelectorAll('[data-admin-view-jump]').forEach((button) => {
+  button.addEventListener('click', () => showAdminView(button.dataset.adminViewJump));
+});
+document.querySelectorAll('[data-admin-back]').forEach((button) => {
+  button.addEventListener('click', () => showAdminView('schedule'));
+});
+
 function formatTime(time) {
   const [hours, minutes] = time.split(':').map(Number);
   const ampm = hours >= 12 ? 'PM' : 'AM';

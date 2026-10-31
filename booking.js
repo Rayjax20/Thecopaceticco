@@ -7,8 +7,6 @@ const bookingArea = document.getElementById('bookingArea');
 const authForm = document.getElementById('authForm');
 const authEmail = document.getElementById('authEmail');
 const authPassword = document.getElementById('authPassword');
-const authPhone = document.getElementById('authPhone');
-const phoneWrap = document.getElementById('phoneAuthWrap');
 const authError = document.getElementById('authError');
 const authSubmit = document.getElementById('authSubmit');
 let authMode = 'signin';
@@ -17,25 +15,16 @@ document.querySelectorAll('[data-auth-mode]').forEach((button) => {
   button.addEventListener('click', () => {
     authMode = button.dataset.authMode;
     document.querySelectorAll('[data-auth-mode]').forEach((tab) => tab.classList.toggle('active', tab === button));
-    phoneWrap.hidden = authMode !== 'signup';
-    authPhone.required = authMode === 'signup';
     authPassword.autocomplete = authMode === 'signup' ? 'new-password' : 'current-password';
     authSubmit.textContent = authMode === 'signup' ? 'Create Account' : 'Sign In';
     authError.textContent = '';
   });
 });
 
-async function savePhoneProfile(user, phone) {
-  const { error } = await sb.from('profiles').upsert({ id:user.id, phone });
-  if (error) console.error('Could not save profile phone:', error);
-}
-
 async function showBooking(user) {
   authGate.hidden = true;
   bookingArea.hidden = false;
   document.getElementById('accountEmail').textContent = user.email || '';
-  const { data } = await sb.from('profiles').select('phone').eq('id',user.id).maybeSingle();
-  document.getElementById('contact').value = data?.phone || user.user_metadata?.phone || '';
 }
 
 async function init() {
@@ -49,12 +38,9 @@ authForm.addEventListener('submit', async (event) => {
   const email = authEmail.value.trim();
   const password = authPassword.value;
   if (authMode === 'signup') {
-    const phone = authPhone.value.trim();
-    if (!phone) { authError.textContent = 'Phone number is required.'; return; }
-    const { data,error } = await sb.auth.signUp({ email,password,options:{ data:{ phone } } });
+    const { data,error } = await sb.auth.signUp({ email,password });
     if (error) { authError.textContent = error.message; return; }
     if (!data.session) { authError.textContent = 'Account created. Check your email to confirm your account, then sign in.'; return; }
-    await savePhoneProfile(data.user,phone);
     await showBooking(data.user);
   } else {
     const { data,error } = await sb.auth.signInWithPassword({ email,password });
@@ -166,9 +152,8 @@ form.addEventListener('submit', async (event) => {
   const startsAt = new Date(`${dateInput.value}T${timeInput.value}:00`);
   const endsAt = new Date(startsAt.getTime()+durationMin*60000);
   const { data:{user} } = await sb.auth.getUser();
-  const profile = await sb.from('profiles').select('phone').eq('id',user.id).maybeSingle();
-  const phone = profile.data?.phone || document.getElementById('contact').value.trim();
   const booking = {
+    user_id:user.id,
     client_name:document.getElementById('name').value.trim(),
     phone:document.getElementById('contact').value.trim(),
     service_name:services.map((service) => service.value).join(' + '),
