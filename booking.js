@@ -1,245 +1,195 @@
-// booking.js — service-based appointment availability + Supabase insert
-// ============================================================
-//  🔑  SUPABASE KEYS
-// ============================================================
 const SUPABASE_URL = 'https://agpztpuugtifmnrnrhgx.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFncHp0cHV1Z3RpZm1ucm5yaGd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NTg0MzMsImV4cCI6MjEwODMzNDQzM30.jFZWhHc2bT7PnPRhtv6GpSZdZz-yvTwmAckgF8vf-og';
-// ============================================================
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const authGate = document.getElementById('authGate');
+const bookingArea = document.getElementById('bookingArea');
+const authForm = document.getElementById('authForm');
+const authEmail = document.getElementById('authEmail');
+const authPassword = document.getElementById('authPassword');
+const authPhone = document.getElementById('authPhone');
+const phoneWrap = document.getElementById('phoneAuthWrap');
+const authError = document.getElementById('authError');
+const authSubmit = document.getElementById('authSubmit');
+let authMode = 'signin';
 
-// ---- Config (change these, not the logic) --------------------
-const CONFIG = {
-  OPEN_HOUR: 8,       // 8:00 AM
-  CLOSE_HOUR: 20,     // 8:00 PM
-  SLOT_INTERVAL: 15,  // 15-min steps
-  DAYS_OPEN: [0,1,2,3,4,5,6],
-  BUFFER_MIN: 10,     // [FOOTPRINT] solo barber pad
-};
+document.querySelectorAll('[data-auth-mode]').forEach((button) => {
+  button.addEventListener('click', () => {
+    authMode = button.dataset.authMode;
+    document.querySelectorAll('[data-auth-mode]').forEach((tab) => tab.classList.toggle('active', tab === button));
+    phoneWrap.hidden = authMode !== 'signup';
+    authPhone.required = authMode === 'signup';
+    authPassword.autocomplete = authMode === 'signup' ? 'new-password' : 'current-password';
+    authSubmit.textContent = authMode === 'signup' ? 'Create Account' : 'Sign In';
+    authError.textContent = '';
+  });
+});
 
-// ---- Grab form elements -------------------------------------
+async function savePhoneProfile(user, phone) {
+  const { error } = await sb.from('profiles').upsert({ id:user.id, phone });
+  if (error) console.error('Could not save profile phone:', error);
+}
+
+async function showBooking(user) {
+  authGate.hidden = true;
+  bookingArea.hidden = false;
+  document.getElementById('accountEmail').textContent = user.email || '';
+  const { data } = await sb.from('profiles').select('phone').eq('id',user.id).maybeSingle();
+  document.getElementById('contact').value = data?.phone || user.user_metadata?.phone || '';
+}
+
+async function init() {
+  const { data:{ session } } = await sb.auth.getSession();
+  if (session) await showBooking(session.user);
+}
+
+authForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  authError.textContent = '';
+  const email = authEmail.value.trim();
+  const password = authPassword.value;
+  if (authMode === 'signup') {
+    const phone = authPhone.value.trim();
+    if (!phone) { authError.textContent = 'Phone number is required.'; return; }
+    const { data,error } = await sb.auth.signUp({ email,password,options:{ data:{ phone } } });
+    if (error) { authError.textContent = error.message; return; }
+    if (!data.session) { authError.textContent = 'Account created. Check your email to confirm your account, then sign in.'; return; }
+    await savePhoneProfile(data.user,phone);
+    await showBooking(data.user);
+  } else {
+    const { data,error } = await sb.auth.signInWithPassword({ email,password });
+    if (error) { authError.textContent = 'Wrong email or password.'; return; }
+    await showBooking(data.user);
+  }
+});
+
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await sb.auth.signOut();
+  bookingArea.hidden = true;
+  authGate.hidden = false;
+  authForm.reset();
+});
+
 const form = document.getElementById('bookingForm');
-const nameEl = document.getElementById('name');
-const contactEl = document.getElementById('contact');
-const mainServiceInputs = [...form.querySelectorAll('input[name="mainService"]')];
-const addOnInputs = [...form.querySelectorAll('input[name="addOn"]')];
-const dateEl = document.getElementById('date');
-const timeEl = document.getElementById('time');
-const notesEl = document.getElementById('notes');
+const dateInput = document.getElementById('date');
+const timeInput = document.getElementById('time');
 const availabilityMessage = document.getElementById('availabilityMessage');
 const serviceSummary = document.getElementById('serviceSummary');
-const addOnOptions = form.querySelector('.add-on-options');
+const mainInputs = [...form.querySelectorAll('input[name="mainService"]')];
+const addInputs = [...form.querySelectorAll('input[name="addOn"]')];
 
-// ---- Service durations — pulled from the services table, not hardcoded
-let SERVICES = {};
-async function loadServices() {
-  const { data, error } = await supabaseClient
-    .from('services')
-    .select('name, price, duration_min');
-  if (error) {
-    console.error('Could not load services:', error);
-    return;
-  }
-  SERVICES = Object.fromEntries(
-    data.map((s) => [`${s.name} — $${s.price}`, s.duration_min])
-  );
-  CONFIG.LONGEST_CUT = Math.max(...data.map((s) => s.duration_min));
-  updateServiceSummary();
-}
-
-// ---- Restrict date picker: no past dates --------------------
-const today = new Date();
-dateEl.min = today.toISOString().split('T')[0];
-
-function resetTimeOptions(message) {
-  timeEl.innerHTML = '';
-  const opt = document.createElement('option');
-  opt.value = '';
-  opt.textContent = message;
-  timeEl.appendChild(opt);
-  timeEl.disabled = true;
-}
+const tomorrow = new Date();
+tomorrow.setDate(tomorrow.getDate()+1);
+dateInput.min = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth()+1).padStart(2,'0')}-${String(tomorrow.getDate()).padStart(2,'0')}`;
 
 function selectedServices() {
-  const mainService = mainServiceInputs.find((input) => input.checked);
-  if (!mainService) return [];
-  // Full Copacetic already includes everything — no add-ons stack on it
-  if (mainService.value.startsWith('The Full Copacetic')) return [mainService];
-  return [mainService, ...addOnInputs.filter((input) => input.checked)];
+  const main = mainInputs.find((input) => input.checked);
+  if (!main) return [];
+  if (main.value === 'The Full Copacetic') return [{ ...main.dataset,value:main.value }];
+  return [{ ...main.dataset,value:main.value },...addInputs.filter((input) => input.checked).map((input) => ({ ...input.dataset,value:input.value }))];
 }
 
-function updateServiceSummary() {
+function updateSummary() {
   const services = selectedServices();
-  if (!services.length) {
-    serviceSummary.textContent = 'Choose a main service to see your appointment length and total.';
-    return;
-  }
-  if (services[0].value.startsWith('The Full Copacetic')) {
-    serviceSummary.textContent = 'The Full Copacetic includes all services · 60 minutes · $75';
-    return;
-  }
-  const duration = services.reduce((t, s) => t + Number(s.dataset.duration), 0);
-  const price = services.reduce((t, s) => t + Number(s.dataset.price), 0);
+  if (!services.length) { serviceSummary.textContent = 'Choose a main service to see your appointment length and total.'; return; }
+  const duration = services.reduce((total,service) => total+Number(service.duration),0);
+  const price = services.reduce((total,service) => total+Number(service.price),0);
   serviceSummary.textContent = `Estimated appointment: ${duration} minutes · $${price}`;
 }
 
-function getServiceDuration(service) {
-  return service.split(' + ').reduce((total, item) => total + (SERVICES[item] || 0), 0) || 45;
-}
-
-// ---- Blackout windows from the admin page --------------------
-let blackouts = [];
-function overlapsBlackout(start, end) {
-  return blackouts.some((b) => start < b.end && b.start < end);
-}
-
-// ---- Offer start times that fit the selected service ----------
-let availabilityRequest = 0;
-async function updateAvailableTimes() {
-  const request = ++availabilityRequest;
-  const services = selectedServices();
-  const duration = services.reduce((t, s) => t + Number(s.dataset.duration), 0);
-  timeEl.value = '';
-  if (!dateEl.value || !services.length) {
-    resetTimeOptions('Choose a service and date first');
-    availabilityMessage.textContent = 'Choose a service and date to see available appointment times.';
-    return;
-  }
-
-  resetTimeOptions('click the arrow to choose a time…');
-  availabilityMessage.textContent = 'Checking availability…';
-
-  const [bookingsRes, blackoutRes] = await Promise.all([
-    supabaseClient.from('bookings').select('time, service_name, status').eq('date', dateEl.value),
-    supabaseClient.from('blackouts').select('start_time, end_time').eq('date', dateEl.value),
-  ]);
-  if (request !== availabilityRequest) return;
-
-  if (bookingsRes.error || blackoutRes.error) {
-    console.error('Could not load availability:', bookingsRes.error || blackoutRes.error);
-    resetTimeOptions('Could not load times');
-    availabilityMessage.textContent = 'Availability could not be loaded. Please try again.';
-    return;
-  }
-
-  // [FOOTPRINT] only non-cancelled bookings occupy a slot
-  const bookings = (bookingsRes.data || [])
-    .filter((b) => b.status !== 'cancelled')
-    .map((b) => ({
-      start: timeToMinutes(b.time),
-      end: timeToMinutes(b.time) + getServiceDuration(b.service_name) + CONFIG.BUFFER_MIN,
-    }))
-    .filter((b) => b.start !== null);
-
-  blackouts = (blackoutRes.data || []).map((b) => ({
-    start: timeToMinutes(b.start_time),
-    end: timeToMinutes(b.end_time),
-  }));
-
-  const placeholder = document.createElement('option');
-  placeholder.value = '';
-  placeholder.textContent = 'Choose an available time';
-  timeEl.appendChild(placeholder);
-
-  let availableCount = 0;
-  const open = CONFIG.OPEN_HOUR * 60;
-  const close = CONFIG.CLOSE_HOUR * 60;
-
-  const selectedDate = new Date(dateEl.value + 'T00:00:00');
-  const now = new Date();
-  const isToday =
-    selectedDate.getFullYear() === now.getFullYear() &&
-    selectedDate.getMonth() === now.getMonth() &&
-    selectedDate.getDate() === now.getDate();
-  const nowMinutes = now.getHours() * 60 + now.getMinutes();
-
-  const footprint = duration + CONFIG.BUFFER_MIN;
-  for (let start = open; start + footprint <= close; start += CONFIG.SLOT_INTERVAL) {
-    if (isToday && start <= nowMinutes) continue;
-
-    const end = start + footprint;
-    const overlapsBooking = bookings.some((b) => start < b.end && b.start < end);
-    if (overlapsBooking || overlapsBlackout(start, end)) continue;
-
-    const option = document.createElement('option');
-    option.value = minutesToTime(start);
-    option.textContent = formatTime(start);
-    timeEl.appendChild(option);
-    availableCount++;
-  }
-
-  timeEl.disabled = availableCount === 0;
-  availabilityMessage.textContent = availableCount
-    ? `${availableCount} available start times for your selected services.`
-    : 'No times are available for this service on that date.';
-  if (!availableCount) resetTimeOptions('No available times');
-}
-
-dateEl.addEventListener('change', updateAvailableTimes);
-form.addEventListener('change', (event) => {
-  if (!event.target.matches('input[name="mainService"], input[name="addOn"]')) return;
-  if (event.target.name === 'mainService') {
-    const fullCopacetic = event.target.value.startsWith('The Full Copacetic') && event.target.checked;
-    addOnOptions.disabled = fullCopacetic;
-    addOnInputs.forEach((input) => { if (fullCopacetic) input.checked = false; });
-  }
-  updateServiceSummary();
-  updateAvailableTimes();
-});
-
-// ---- Submit: insert into Supabase ---------------------------
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  if (!timeEl.value) return;
-
-  const services = selectedServices();
-  const durationMin = services.reduce((t, s) => t + Number(s.dataset.duration), 0);
-
-  // Build real timestamps so the overlap check and dashboard stay honest
-  const startsAt = new Date(`${dateEl.value}T${timeEl.value}:00`);
-  const endsAt = new Date(startsAt.getTime() + (durationMin + CONFIG.BUFFER_MIN) * 60000);
-
-  const booking = {
-    client_name: nameEl.value.trim(),
-    phone: contactEl.value.trim(),   // ✅ FIXED: writes to `phone`, not `contact`
-    service_name: services.map((s) => s.value).join(' + '),
-    addons: addOnInputs.filter((i) => i.checked).map((i) => i.value),
-    date: dateEl.value,
-    time: timeEl.value,
-    starts_at: startsAt.toISOString(),
-    ends_at: endsAt.toISOString(),
-    notes: notesEl.value.trim(),
-    status: 'confirmed',
-  };
-
-  const { error } = await supabaseClient.from('bookings').insert(booking);
-  if (error) {
-    alert('Something went wrong — please try again or text Rayvon directly.');
-    console.error(error);
-  } else {
-    alert('You\'re booked! Rayvon will reach out if anything changes. See you at the chair.');
-    form.reset();
-    addOnOptions.disabled = false;
-    resetTimeOptions('Choose a service and date first');
-    availabilityMessage.textContent = 'Choose a service and date to see available appointment times.';
-    updateServiceSummary();
-  }
-});
-
-// ---- Helpers ------------------------------------------------
 function timeToMinutes(time) {
-  const match = /^(\d{2}):(\d{2})/.exec(time);
-  if (!match) return null;
-  return Number(match[1]) * 60 + Number(match[2]);
-}
-function minutesToTime(minutes) {
-  return `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
+  const match = /^(\d{2}):(\d{2})/.exec(time || '');
+  return match ? Number(match[1])*60+Number(match[2]) : null;
 }
 function formatTime(minutes) {
-  const h = Math.floor(minutes / 60), m = minutes % 60;
-  const suffix = h >= 12 ? 'PM' : 'AM';
-  return `${(h % 12 || 12)}:${String(m).padStart(2, '0')} ${suffix}`;
+  const hour = Math.floor(minutes/60);
+  const minute = minutes%60;
+  return `${hour%12||12}:${String(minute).padStart(2,'0')} ${hour>=12?'PM':'AM'}`;
+}
+function serviceDuration(serviceName) {
+  const durations = {'Signature Cut':30,'Line Up Only':25,'Relaxed Face Shave':15,'Beard Addition':10,'Hair Trim Addition':20,'The Full Copacetic':60};
+  return serviceName.split(' + ').reduce((total,name) => total+(durations[name.trim()]||0),0)||45;
 }
 
-// ---- Boot ---------------------------------------------------
-loadServices();
+async function loadAvailability() {
+  const services = selectedServices();
+  const date = dateInput.value;
+  timeInput.innerHTML = '<option value="">Choose an available time</option>';
+  if (!date || !services.length) { timeInput.disabled = true; availabilityMessage.textContent = 'Choose a service and date to see available appointment times.'; return; }
+  availabilityMessage.textContent = 'Checking availability…';
+  const duration = services.reduce((total,service) => total+Number(service.duration),0);
+  const [bookingsResult,blackoutsResult] = await Promise.all([
+    sb.from('bookings').select('time,service_name,status').eq('date',date),
+    sb.from('blackouts').select('start_time,end_time').eq('date',date)
+  ]);
+  if (bookingsResult.error || blackoutsResult.error) { timeInput.disabled = true; availabilityMessage.textContent = 'Availability could not be loaded. Please try again.'; return; }
+  const bookings = (bookingsResult.data||[]).filter((booking) => booking.status !== 'cancelled').map((booking) => {
+    const start = timeToMinutes(booking.time);
+    return {start,end:start+serviceDuration(booking.service_name||'')+10};
+  }).filter((booking) => booking.start!==null);
+  const blackouts = (blackoutsResult.data||[]).map((item) => ({start:timeToMinutes(item.start_time),end:timeToMinutes(item.end_time)}));
+  let count = 0;
+  const footprint = duration+10;
+  for (let start=480;start+footprint<=1200;start+=15) {
+    const end = start+footprint;
+    const booked = bookings.some((booking) => start<booking.end && booking.start<end);
+    const blocked = blackouts.some((window) => start<window.end && window.start<end);
+    if (!booked&&!blocked) {
+      const option = document.createElement('option');
+      option.value = `${String(Math.floor(start/60)).padStart(2,'0')}:${String(start%60).padStart(2,'0')}`;
+      option.textContent = formatTime(start);
+      timeInput.appendChild(option);
+      count++;
+    }
+  }
+  timeInput.disabled = count===0;
+  availabilityMessage.textContent = count ? `${count} available start times for your selected services.` : 'No times are available for this service on that date.';
+  if (!count) timeInput.innerHTML = '<option value="">No available times</option>';
+}
+
+mainInputs.forEach((input) => input.addEventListener('change', () => {
+  const full = input.checked&&input.value==='The Full Copacetic';
+  document.getElementById('addOnOptions').disabled = full;
+  addInputs.forEach((addInput) => { if (full) addInput.checked=false; });
+  updateSummary();
+  loadAvailability();
+}));
+addInputs.forEach((input) => input.addEventListener('change', () => { updateSummary();loadAvailability(); }));
+dateInput.addEventListener('change',loadAvailability);
+
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  if (!timeInput.value) return;
+  const services = selectedServices();
+  const selectedAddOns = addInputs.filter((input) => input.checked).map((input) => input.value);
+  const durationMin = services.reduce((total,service) => total+Number(service.duration),0);
+  const startsAt = new Date(`${dateInput.value}T${timeInput.value}:00`);
+  const endsAt = new Date(startsAt.getTime()+durationMin*60000);
+  const { data:{user} } = await sb.auth.getUser();
+  const profile = await sb.from('profiles').select('phone').eq('id',user.id).maybeSingle();
+  const phone = profile.data?.phone || document.getElementById('contact').value.trim();
+  const booking = {
+    client_name:document.getElementById('name').value.trim(),
+    phone:document.getElementById('contact').value.trim(),
+    service_name:services.map((service) => service.value).join(' + '),
+    addons:selectedAddOns,
+    date:dateInput.value,
+    time:timeInput.value,
+    starts_at:startsAt.toISOString(),
+    ends_at:endsAt.toISOString(),
+    notes:document.getElementById('notes').value.trim(),
+    status:'confirmed'
+  };
+  const { error } = await sb.from('bookings').insert(booking);
+  if (error) { availabilityMessage.textContent='Something went wrong — please try again or text Rayvon directly.'; console.error(error); return; }
+  document.getElementById('modalSummary').textContent = `${booking.service_name} · ${booking.date} at ${formatTime(timeToMinutes(booking.time))}`;
+  document.getElementById('bookingModal').hidden=false;
+  form.reset();
+  document.getElementById('addOnOptions').disabled=false;
+  timeInput.innerHTML='<option value="">Choose a service and date first</option>';
+  timeInput.disabled=true;
+  updateSummary();
+});
+
+document.getElementById('closeModal').addEventListener('click', () => { document.getElementById('bookingModal').hidden=true; });
+init();

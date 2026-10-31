@@ -3,98 +3,53 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#e9e0d2">
-<title>Copacetic Co. — Staff</title>
+<meta name="theme-color" content="#071d14">
+<title>Copacetic Co. — The Green Room | Lubbock Barber</title>
+<meta name="description" content="Copacetic Co. — The Green Room. Appointment-only barbering in Lubbock, Texas. More than a haircut.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="admin.css">
 </head>
 <body>
-
-<!-- ============ LOGIN GATE ============ -->
-<div id="loginScreen" class="admin-login">
-  <div class="login-card">
-    <img src="assets/logo.jpeg" alt="Copacetic Co. logo">
-    <h1>Staff <em>Login</em></h1>
-    <form id="loginForm">
-      <label>Email<input id="loginEmail" type="email" required placeholder="you@example.com"></label>
-      <label>Password<input id="loginPassword" type="password" required placeholder="••••••••"></label>
-      <button class="btn" type="submit">Sign In</button>
-      <p id="loginError" class="login-error"></p>
-    </form>
-    <a class="back-link" href="/">← Back to site</a>
+<header class="nav"><a class="brand" href="#top">COPACETIC <span>CO.</span></a><nav><a href="#services">Services</a><a href="#story">Story</a><a href="#work">Work</a><a href="#where">Where to Go</a><a href="/my-bookings.html">My Bookings</a><a href="#contact">Contact</a></nav><a class="staff-link" href="/admin.html">For Staff/Admins</a><a class="btn small" href="/booking.html">Book Now</a></header>
+<main id="top">
+<section class="hero"><div class="hero-media"><img src="assets/cut-6.png" alt="Barber finishing a haircut"><div class="shade"></div></div><div class="hero-copy"><p class="eyebrow">THE GREEN ROOM · LUBBOCK, TEXAS</p><h1>MORE THAN<br><em>A HAIRCUT.</em></h1><p class="lede">Precision barbering built around detail, confidence, and an experience that feels like your own room.</p><div class="actions"><a class="btn" href="/booking.html">Book Your Chair</a><a class="textlink" href="#work">See the work ↘</a></div></div><div class="hero-mark"><img src="assets/logo.jpeg" alt="Copacetic Co. The Green Room logo"></div></section>
+<section class="ticker">
+  <div class="ticker-inner">
+    <span>APPOINTMENT ONLY</span><i>◆</i><span>EST. 2020</span><i>◆</i><span>SLIDE & 50TH</span><i>◆</i><span>THE GREEN ROOM</span><i>◆</i>
+    <span>APPOINTMENT ONLY</span><i>◆</i><span>EST. 2020</span><i>◆</i><span>SLIDE & 50TH</span><i>◆</i><span>THE GREEN ROOM</span><i>◆</i>
   </div>
-</div>
-
-<!-- ============ DASHBOARD ============ -->
-<div id="dashboard" class="admin-dash" hidden>
-  <header class="dash-header">
-    <div class="dash-brand">COPACETIC <span>CO.</span> <small>STAFF</small></div>
-    <div class="dash-actions">
-      <a class="btn small" href="/">View Site</a>
-      <button id="logoutBtn" class="btn small ghost">Log Out</button>
+</section>
+<section class="intro"><p class="eyebrow">COPACETIC /kō-pə-ˈse-tik/</p><div><h2>Good. Fine. <em>Copacetic.</em></h2><p>Most people say "I'm good" when somebody asks how they're doing. Copacetic Co. is that feeling made personal — authentic, relaxed, and done right.</p></div></section>
+<section id="services" class="services"><div class="section-head"><p class="eyebrow">THE MENU</p><h2>Choose your <em>service.</em></h2></div><div class="service-grid">
+<article><div><h3>Signature Cut</h3><p>Consultation and cut — skin or taper fade, precision edge-up, finished with a straight-razor line.</p></div><b>$35</b><span>30 MIN</span></article>
+<article><div><h3>Line Up Only</h3><p>Precision edge-up finished with a hot towel and straight-razor line.</p></div><b>$25</b><span>25 MIN</span></article>
+<article><div><h3>Relaxed Face Shave</h3><p>Hot towel, aloe gel, and straight-razor shave.</p></div><b>$15</b><span>15 MIN</span></article>
+<article><div><h3>Beard Addition</h3><p>Trim, fade and shape with hot towel, beard oil finish, and straight-razor line.</p></div><b>$15</b><span>+10 MIN</span></article>
+<article><div><h3>Hair Trim Addition</h3><p>Precision hair trim, tailored style, and length adjustment.</p></div><b>$20</b><span>10–20 MIN</span></article>
+<article class="featured"><div><p class="eyebrow">THE COMPLETE EXPERIENCE</p><h3>The Full Copacetic</h3><p>Everything above, back to back, with zero rushing.</p></div><b>$70</b><span>1 HR</span></article>
+</div></section>
+<section id="work" class="work"><div class="section-head"><p class="eyebrow">FROM THE CHAIR</p><h2>Clean work. <em>No shortcuts.</em></h2></div><div class="gallery"><img src="assets/cut-1.jpeg" alt="Precision line up"><img src="assets/cut-2.jpeg" alt="Finished haircut"><img src="assets/cut-3.png" alt="Fade and styled hair"></div></section>
+<section class="stats"><div><strong>65+</strong><span>CUTS / MONTH</span></div><div><strong>85%</strong><span>CLIENT RETENTION</span></div><div><strong>5+</strong><span>YEARS BEHIND THE CHAIR</span></div></section>
+<section id="story" class="story"><div class="story-image"><img src="assets/cut-5.png" alt="Barber at work"></div><div class="story-copy"><p class="eyebrow">BEHIND THE CHAIR</p><h2>Built from <em>the dorms up.</em></h2><p>Rayvon started cutting hair in the 10th grade — first teammates and younger brothers, then classmates and neighbors. Most of the craft was self-taught, with an early foundation shaped by his friend Marqeese.</p><p>At Texas Tech, dorm cuts became student-apartment cuts, then an independent barber studio. The Green Room is the next chapter: one room, one chair, and an experience built around authenticity.</p><p class="quote">"We all have a room. Mine happens to be green."</p></div></section>
+<section id="book" class="booking">
+  <div>
+    <p class="eyebrow">RESERVE YOUR CHAIR</p>
+    <h2>Ready to get <em>Copacetic?</em></h2>
+    <p>Appointments only. Book online and Rayvon will reach out within 24 hours to confirm your time.</p>
+    <div class="policy">
+      <span>15+ min late: +$5 if communicated</span>
+      <span>No communication within 15 min: no-show — you will no longer be eligible for booking</span>
     </div>
-  </header>
-
-  <div class="dash-layout">
-    <p id="dashboardError" class="dashboard-error" role="alert" hidden></p>
-    <!-- Today's schedule -->
-    <section class="dash-main">
-      <div class="section-head"><p class="eyebrow" id="todayLabel">TODAY</p><h2>Today's <em>Schedule</em></h2></div>
-      <div id="daySchedule" class="day-schedule">
-        <!-- time blocks render here -->
-      </div>
-    </section>
-
-    <!-- Week strip + side panel -->
-    <aside class="dash-side">
-      <div class="section-head"><p class="eyebrow">NEXT 7 DAYS</p><h3>This <em>Week</em></h3></div>
-      <div id="weekStrip" class="week-strip">
-        <!-- 7 day cards render here -->
-      </div>
-
-      <div class="stats-panel">
-        <div class="stat"><strong id="statToday">0</strong><span>Today</span></div>
-        <div class="stat"><strong id="statConfirmed">0</strong><span>Confirmed</span></div>
-        <div class="stat"><strong id="statCompleted">0</strong><span>Completed</span></div>
-        <div class="stat"><strong id="statCancelled">0</strong><span>Cancelled</span></div>
-      </div>
-
-      <div class="section-head"><p class="eyebrow">THE MENU</p><h3>Service <em>List</em></h3></div>
-      <div id="serviceList" class="service-list">
-        <!-- services render here -->
-      </div>
-
-      <!-- ============ BLACKOUT WINDOWS ============ -->
-      <div class="section-head"><p class="eyebrow">AVAILABILITY</p><h3>Block <em>Times</em></h3></div>
-      <p class="dash-note">Block any time range so it won't show as available for booking.</p>
-
-      <form id="blackoutForm" class="blackout-form">
-        <label>Date
-          <input id="blackoutDate" type="date" required>
-        </label>
-        <label>Start time <em>(e.g. 6:45 PM)</em>
-          <input id="blackoutStart" type="text" placeholder="6:45 PM" required>
-        </label>
-        <label>End time <em>(e.g. 8:00 PM)</em>
-          <input id="blackoutEnd" type="text" placeholder="8:00 PM" required>
-        </label>
-        <label>Reason <em>(optional)</em>
-          <input id="blackoutReason" type="text" placeholder="lunch, errands...">
-        </label>
-        <button class="btn small" type="submit">Block Time</button>
-      </form>
-
-      <div id="blackoutList" class="blackout-list">
-        <!-- blackouts render here -->
-      </div>
-    </aside>
+    <a class="btn" href="/booking.html">Book Now</a>
+    <p class="pay-note"><strong>Payment</strong> — Cash, CashApp, or Zelle to Rayvon's number, paid after your session is complete.</p>
   </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
-<script src="admin.js?v=202610291155"></script>
-</body>
-</html>
+</section>
+<section id="where" class="where">
+  <div class="section-head"><p class="eyebrow">FIND US</p><h2>Where to <em>Go</em></h2></div>
+  <p>Slide & 50th · Near the mall, Lubbock, Texas. Directions and parking info are on their way.</p>
+  <a class="btn" href="/where-to-go.html">Get Directions</a>
+</section>
+<section id="contact" class="contact"><img src="assets/logo.jpeg" alt="Copacetic logo"><div><p class="eyebrow">THE GREEN ROOM</p><h2>Lubbock, Texas</h2><p>Slide & 50th · Near the mall<br>Thursday–Monday · Times subject to change<br>Appointment only</p></div><div class="contact-links"><a href="tel:+18068537345">(806) 853-7345</a><a href="mailto:rayvonejr04@hotmail.com">rayvonejr04@hotmail.com</a><a href="https://www.instagram.com/copaceticco_" target="_blank" rel="noreferrer">@copaceticco_ ↗</a></div></section>
+</main><footer><span>© 2026 COPACETIC CO.</span><span>THE GREEN ROOM · LUBBOCK, TX</span><a class="staff-link" href="/admin.html">For Staff/Admins</a></footer><a class="mobile-book" href="/booking.html">BOOK NOW</a><script src="script.js"></script></body></html>

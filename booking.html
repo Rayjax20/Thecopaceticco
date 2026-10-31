@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#071d14">
+<title>Book a Chair — Copacetic Co. | The Green Room</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="booking.css">
+</head>
+<body class="inner-page">
+<header class="nav"><a class="brand" href="/">COPACETIC <span>CO.</span></a><nav><a href="/#services">Services</a><a href="/#story">Story</a><a href="/#work">Work</a><a href="/where-to-go.html">Where to Go</a><a href="/my-bookings.html">My Bookings</a><a href="/#contact">Contact</a></nav><a class="btn small" href="/booking.html">Book Now</a></header>
+<main>
+  <section class="page-hero"><p class="eyebrow">THE GREEN ROOM · LUBBOCK, TEXAS</p><h1>Reserve your <em>chair.</em></h1></section>
+
+  <section class="booking-shell">
+    <div id="authGate" class="auth-gate">
+      <p class="eyebrow">CLIENT ACCOUNT</p>
+      <h2>Sign in to <em>book.</em></h2>
+      <div class="auth-tabs" role="tablist">
+        <button type="button" class="active" data-auth-mode="signin">Sign In</button>
+        <button type="button" data-auth-mode="signup">Create Account</button>
+      </div>
+      <form id="authForm" class="auth-form">
+        <label>Email<input id="authEmail" type="email" autocomplete="email" required></label>
+        <label>Password<input id="authPassword" type="password" autocomplete="current-password" minlength="6" required></label>
+        <label id="phoneAuthWrap" hidden>Phone number<input id="authPhone" type="tel" autocomplete="tel" placeholder="(806) 555-0123"></label>
+        <p id="authError" class="form-error" role="alert"></p>
+        <button class="btn" id="authSubmit" type="submit">Sign In</button>
+      </form>
+    </div>
+
+    <div id="bookingArea" class="booking-area" hidden>
+      <div class="account-bar"><span id="accountEmail"></span><button id="logoutBtn" type="button">Log Out</button></div>
+      <div class="booking-layout">
+        <form id="bookingForm" class="booking-form">
+          <div class="form-grid">
+            <label>Name<input id="name" name="name" type="text" autocomplete="name" required></label>
+            <label>Phone<input id="contact" name="contact" type="tel" autocomplete="tel" required></label>
+          </div>
+
+          <fieldset><legend>Main service</legend><div class="service-options">
+            <label><input type="radio" name="mainService" value="Signature Cut" data-price="35" data-duration="30"><span><b>Signature Cut</b><small>30 min · $35</small></span></label>
+            <label><input type="radio" name="mainService" value="Line Up Only" data-price="25" data-duration="25"><span><b>Line Up Only</b><small>25 min · $25</small></span></label>
+            <label><input type="radio" name="mainService" value="Relaxed Face Shave" data-price="15" data-duration="15"><span><b>Relaxed Face Shave</b><small>15 min · $15</small></span></label>
+            <label class="featured-option"><input type="radio" name="mainService" value="The Full Copacetic" data-price="70" data-duration="60"><span><b>The Full Copacetic</b><small>Includes all services · 1 hr · $70</small></span></label>
+          </div></fieldset>
+
+          <fieldset id="addOnOptions"><legend>Add-ons</legend><div class="addon-options">
+            <label><input type="checkbox" name="addOn" value="Beard Addition" data-price="15" data-duration="10"><span>Beard Addition <b>$15</b><small>+10 min</small></span></label>
+            <label><input type="checkbox" name="addOn" value="Hair Trim Addition" data-price="20" data-duration="20"><span>Hair Trim Addition <b>$20</b><small>10–20 min</small></span></label>
+          </div></fieldset>
+
+          <div class="form-grid date-grid">
+            <label>Preferred date<input id="date" name="date" type="date" required></label>
+            <label>Available time<select id="time" name="time" required disabled><option value="">Choose a service and date first</option></select></label>
+          </div>
+          <p class="date-note">Same-day booking is not available on site. For personally arranged same-day appointments, contact Rayvon; a $25 same-day fee applies if confirmed.</p>
+          <p id="availabilityMessage" class="availability"></p>
+
+          <label>Notes<textarea id="notes" name="notes" rows="5" placeholder="my hair is curly and i want a taper fade"></textarea></label>
+          <p id="serviceSummary" class="service-summary">Choose a main service to see your appointment length and total.</p>
+          <button class="btn booking-submit" type="submit">Confirm Booking</button>
+        </form>
+
+        <aside class="booking-policy">
+          <p class="eyebrow">BEFORE YOUR VISIT</p>
+          <h3>Know <em>before.</em></h3>
+          <p>Once you confirm your booking, Rayvon will reach out within 24 hours.</p>
+          <div class="policy-rule"><strong>No communication within 15 min</strong><span>No-show — you will no longer be eligible for booking.</span></div>
+          <div class="policy-rule"><strong>Payment</strong><span>Cash, CashApp, or Zelle to Rayvon's number, paid after your session is complete.</span></div>
+          <a href="tel:+18068537345">Need to cancel? Text Rayvon at (806) 853-7345.</a>
+        </aside>
+      </div>
+    </div>
+  </section>
+</main>
+<div id="bookingModal" class="modal" hidden><div class="modal-card"><p class="eyebrow">BOOKING CONFIRMED</p><h2>You're <em>booked.</em></h2><p id="modalSummary"></p><p>Rayvon will reach out within 24 hours.</p><div class="modal-actions"><a class="btn" href="/where-to-go.html">Where to Go</a><button type="button" id="closeModal" class="text-button">Close</button></div></div></div>
+<footer><span>© 2026 COPACETIC CO.</span><span>THE GREEN ROOM · LUBBOCK, TX</span><a class="staff-link" href="/admin.html">For Staff/Admins</a></footer>
+<a class="mobile-book" href="/booking.html">BOOK NOW</a>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="booking.js"></script>
+</body>
+</html>

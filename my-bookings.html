@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#071d14">
+<title>My Bookings — Copacetic Co.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="my-bookings.css">
+</head>
+<body class="inner-page">
+<header class="nav"><a class="brand" href="/">COPACETIC <span>CO.</span></a><nav><a href="/#services">Services</a><a href="/#story">Story</a><a href="/#work">Work</a><a href="/where-to-go.html">Where to Go</a><a href="/my-bookings.html">My Bookings</a><a href="/#contact">Contact</a></nav><a class="btn small" href="/booking.html">Book Now</a></header>
+<main>
+<section class="page-hero"><p class="eyebrow">CLIENT ACCOUNT</p><h1>My <em>bookings.</em></h1></section>
+<section class="account-shell">
+  <div id="authGate" class="auth-gate"><p class="eyebrow">YOUR APPOINTMENTS</p><h2>Sign in to <em>continue.</em></h2>
+    <div class="auth-tabs"><button type="button" class="active" data-auth-mode="signin">Sign In</button><button type="button" data-auth-mode="signup">Create Account</button></div>
+    <form id="authForm" class="auth-form">
+      <label>Email<input id="authEmail" type="email" autocomplete="email" required></label>
+      <label>Password<input id="authPassword" type="password" autocomplete="current-password" minlength="6" required></label>
+      <label id="phoneAuthWrap" hidden>Phone number<input id="authPhone" type="tel" autocomplete="tel"></label>
+      <p id="authError" class="form-error"></p><button class="btn" id="authSubmit">Sign In</button>
+    </form>
+  </div>
+  <div id="accountArea" hidden>
+    <div class="account-bar"><span id="accountEmail"></span><div><a class="btn small" href="/booking.html">Book Now</a><button id="logoutBtn" type="button">Log Out</button></div></div>
+    <section class="booking-list-section"><div class="section-head"><p class="eyebrow">UP NEXT</p><h2>Upcoming <em>appointments.</em></h2></div><div id="upcomingBookings" class="booking-list"></div></section>
+    <section class="booking-list-section past"><div class="section-head"><p class="eyebrow">CHAIR HISTORY</p><h2>Past <em>appointments.</em></h2></div><div id="pastBookings" class="booking-list"></div></section>
+  </div>
+</section>
+</main>
+<footer><span>© 2026 COPACETIC CO.</span><span>THE GREEN ROOM · LUBBOCK, TX</span><a class="staff-link" href="/admin.html">For Staff/Admins</a></footer>
+<a class="mobile-book" href="/booking.html">BOOK NOW</a>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="my-bookings.js"></script>
+</body>
+</html>
