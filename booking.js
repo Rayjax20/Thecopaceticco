@@ -66,7 +66,39 @@ const addInputs = [...form.querySelectorAll('input[name="addOn"]')];
 
 const tomorrow = new Date();
 tomorrow.setDate(tomorrow.getDate()+1);
-dateInput.min = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth()+1).padStart(2,'0')}-${String(tomorrow.getDate()).padStart(2,'0')}`;
+function localDateString(date) {
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+}
+dateInput.min = localDateString(tomorrow);
+
+function isClosedDay(dateValue) {
+  if (!dateValue) return false;
+  const date = new Date(`${dateValue}T12:00:00`);
+  return date.getDay() === 2 || date.getDay() === 3;
+}
+
+function validateDateSelection() {
+  if (!dateInput.value) {
+    dateInput.setCustomValidity('');
+    return true;
+  }
+  if (isClosedDay(dateInput.value)) {
+    dateInput.value = '';
+    timeInput.value = '';
+    timeInput.disabled = true;
+    availabilityMessage.textContent = 'Tuesday and Wednesday are closed and unavailable for booking. Please choose another date.';
+    dateInput.setCustomValidity('Tuesday and Wednesday are closed and unavailable for booking.');
+    return false;
+  }
+  if (dateInput.value < dateInput.min) {
+    dateInput.value = '';
+    availabilityMessage.textContent = 'Same-day and past appointments cannot be booked online. Please choose a future date.';
+    dateInput.setCustomValidity('Same-day and past appointments cannot be booked online.');
+    return false;
+  }
+  dateInput.setCustomValidity('');
+  return true;
+}
 
 function selectedServices() {
   const main = mainInputs.find((input) => input.checked);
@@ -101,6 +133,7 @@ async function loadAvailability() {
   const services = selectedServices();
   const date = dateInput.value;
   timeInput.innerHTML = '<option value="">Choose an available time</option>';
+  if (!validateDateSelection()) return;
   if (!date || !services.length) { timeInput.disabled = true; availabilityMessage.textContent = 'Choose a service and date to see available appointment times.'; return; }
   availabilityMessage.textContent = 'Checking availability…';
   const duration = services.reduce((total,service) => total+Number(service.duration),0);
@@ -141,10 +174,12 @@ mainInputs.forEach((input) => input.addEventListener('change', () => {
   loadAvailability();
 }));
 addInputs.forEach((input) => input.addEventListener('change', () => { updateSummary();loadAvailability(); }));
+dateInput.addEventListener('input', validateDateSelection);
 dateInput.addEventListener('change',loadAvailability);
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
+  if (!validateDateSelection()) return;
   if (!timeInput.value) return;
   const services = selectedServices();
   const selectedAddOns = addInputs.filter((input) => input.checked).map((input) => input.value);
@@ -166,15 +201,59 @@ form.addEventListener('submit', async (event) => {
     status:'confirmed'
   };
   const { error } = await sb.from('bookings').insert(booking);
-  if (error) { availabilityMessage.textContent='Something went wrong — please try again or text Rayvon directly.'; console.error(error); return; }
-  document.getElementById('modalSummary').textContent = `${booking.service_name} · ${booking.date} at ${formatTime(timeToMinutes(booking.time))}`;
-  document.getElementById('bookingModal').hidden=false;
+  if (error) {
+    console.error(error);
+    showBookingModal('error');
+    return;
+  }
   form.reset();
   document.getElementById('addOnOptions').disabled=false;
   timeInput.innerHTML='<option value="">Choose a service and date first</option>';
   timeInput.disabled=true;
   updateSummary();
+  showBookingModal('success', `${booking.service_name} · ${booking.date} at ${formatTime(timeToMinutes(booking.time))}`);
 });
 
-document.getElementById('closeModal').addEventListener('click', () => { document.getElementById('bookingModal').hidden=true; });
+const bookingModal = document.getElementById('bookingModal');
+const modalEyebrow = document.getElementById('modalEyebrow');
+const modalTitle = document.getElementById('modalTitle');
+const modalSummary = document.getElementById('modalSummary');
+const modalMessage = document.getElementById('modalMessage');
+const whereToGoLink = document.getElementById('whereToGoLink');
+
+function showBookingModal(state, summary = '') {
+  if (state === 'error') {
+    modalEyebrow.textContent = 'BOOKING ERROR';
+    modalTitle.innerHTML = 'Something went <em>wrong.</em>';
+    modalSummary.hidden = true;
+    modalSummary.textContent = '';
+    modalMessage.textContent = 'Please try again or text Rayvon directly at (806) 853-7345.';
+    whereToGoLink.hidden = true;
+    bookingModal.dataset.state = 'error';
+  } else {
+    modalEyebrow.textContent = 'BOOKING CONFIRMED';
+    modalTitle.innerHTML = 'Your booking is <em>confirmed!</em>';
+    modalSummary.hidden = false;
+    modalSummary.textContent = summary;
+    modalMessage.textContent = 'Rayvon will reach out at his earliest convenience with more details.';
+    whereToGoLink.hidden = false;
+    bookingModal.dataset.state = 'success';
+  }
+  bookingModal.hidden = false;
+  document.body.classList.add('modal-open');
+  document.getElementById('closeModal').focus();
+}
+
+function closeBookingModal() {
+  bookingModal.hidden = true;
+  document.body.classList.remove('modal-open');
+}
+
+document.getElementById('closeModal').addEventListener('click', closeBookingModal);
+bookingModal.addEventListener('click', (event) => {
+  if (event.target === bookingModal) closeBookingModal();
+});
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && !bookingModal.hidden) closeBookingModal();
+});
 init();

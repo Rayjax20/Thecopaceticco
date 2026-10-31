@@ -54,10 +54,10 @@
           </div></fieldset>
 
           <div class="form-grid date-grid">
-            <label>Preferred date<input id="date" name="date" type="date" required></label>
+            <label>Preferred date<input id="date" name="date" type="date" required aria-describedby="dateNote"></label>
             <label>Available time<select id="time" name="time" required disabled><option value="">Choose a service and date first</option></select></label>
           </div>
-          <p class="date-note">Same-day booking is not available on site. For personally arranged same-day appointments, contact Rayvon; a $25 same-day fee applies if confirmed.</p>
+          <p id="dateNote" class="date-note">Same-day booking is not available on site. For personally arranged same-day appointments, contact Rayvon; a $25 same-day fee applies if confirmed.</p>
           <p id="availabilityMessage" class="availability"></p>
 
           <label>Notes<textarea id="notes" name="notes" rows="5" placeholder="my hair is curly and i want a taper fade"></textarea></label>
@@ -68,7 +68,7 @@
         <aside class="booking-policy">
           <p class="eyebrow">BEFORE YOUR VISIT</p>
           <h3>Know <em>before.</em></h3>
-          <p>Once you confirm your booking, Rayvon will reach out within 24 hours.</p>
+          <p>Once you confirm your booking, Rayvon will reach out at his earliest convenience with more details.</p>
           <div class="policy-rule"><strong>No communication within 15 min</strong><span>No-show — you will no longer be eligible for booking.</span></div>
           <div class="policy-rule"><strong>Payment</strong><span>Cash, CashApp, or Zelle to Rayvon's number, paid after your session is complete.</span></div>
           <a href="tel:+18068537345">Need to cancel? Text Rayvon at (806) 853-7345.</a>
@@ -77,7 +77,18 @@
     </div>
   </section>
 </main>
-<div id="bookingModal" class="modal" hidden><div class="modal-card"><p class="eyebrow">BOOKING CONFIRMED</p><h2>You're <em>booked.</em></h2><p id="modalSummary"></p><p>Rayvon will reach out within 24 hours.</p><div class="modal-actions"><a class="btn" href="/where-to-go.html">Where to Go</a><button type="button" id="closeModal" class="text-button">Close</button></div></div></div>
+<div id="bookingModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalMessage" hidden>
+  <div class="modal-card">
+    <p id="modalEyebrow" class="eyebrow">BOOKING CONFIRMED</p>
+    <h2 id="modalTitle">Your booking is <em>confirmed!</em></h2>
+    <p id="modalSummary" class="modal-summary"></p>
+    <p id="modalMessage">Rayvon will reach out at his earliest convenience with more details.</p>
+    <div class="modal-actions">
+      <a id="whereToGoLink" class="btn" href="/where-to-go.html">Where to Go: 5204 50th Street, Lubbock, TX 79414</a>
+      <button type="button" id="closeModal" class="modal-close">Close</button>
+    </div>
+  </div>
+</div>
 <footer><span>© 2026 COPACETIC CO.</span><span>THE GREEN ROOM · LUBBOCK, TX</span><a class="staff-link" href="/admin.html">For Staff/Admins</a></footer>
 <a class="mobile-book" href="/booking.html">BOOK NOW</a>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
