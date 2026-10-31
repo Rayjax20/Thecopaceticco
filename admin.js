@@ -70,26 +70,25 @@ async function enterDashboard(userId) {
 }
 
 async function loadDashboard() {
-  const today = new Date().toISOString().split('T')[0];
+  const today = localDateString(new Date());
 
   const { data: todays } = await sb
     .from('bookings')
     .select('*')
     .eq('date', today)
     .order('time');
-  renderDay(todays || []);
-
   const week = [];
   for (let i = 0; i < 7; i++) {
     const d = new Date();
     d.setDate(d.getDate() + i);
-    week.push(d.toISOString().split('T')[0]);
+    week.push(localDateString(d));
   }
   const { data: weekBookings } = await sb
     .from('bookings')
     .select('*')
     .in('date', week)
     .order('date');
+  renderDay(weekBookings || [], week);
   renderWeek(weekBookings || []);
 
   const { data: services } = await sb
@@ -104,53 +103,67 @@ async function loadDashboard() {
   loadBlackouts(today);
 }
 
-function renderDay(bookings) {
+function renderDay(bookings, dates) {
   const container = document.getElementById('daySchedule');
   container.innerHTML = '';
 
-  if (!bookings.length) {
-    container.textContent = 'No appointments booked for today.';
-    return;
-  }
+  const byDate = {};
+  bookings.forEach((booking) => {
+    byDate[booking.date] = byDate[booking.date] || [];
+    byDate[booking.date].push(booking);
+  });
 
-  bookings.forEach((match) => {
-    const slot = document.createElement('div');
-    slot.className = `time-slot has-booking ${STATUS[match.status] || 'green'}`;
+  dates.forEach((date) => {
+    const group = document.createElement('section');
+    group.className = 'schedule-day';
 
-    const label = document.createElement('span');
-    label.className = 'slot-time';
-    label.textContent = formatTime(match.time);
-    slot.appendChild(label);
+    const heading = document.createElement('h3');
+    heading.className = 'schedule-day-heading';
+    heading.textContent = formatLongOrdinalDate(date);
+    group.appendChild(heading);
 
-    // ---- Booking card: name, phone (tap to call), service, add-ons, notes ----
-    const card = document.createElement('div');
-    card.className = 'booking-card';
-    card.innerHTML = `
+    const dayBookings = (byDate[date] || []).slice().sort((a, b) => String(a.time).localeCompare(String(b.time)));
+    if (!dayBookings.length) {
+      const empty = document.createElement('p');
+      empty.className = 'schedule-empty';
+      empty.textContent = 'No appointments';
+      group.appendChild(empty);
+      container.appendChild(group);
+      return;
+    }
+
+    dayBookings.forEach((match) => {
+      const slot = document.createElement('div');
+      slot.className = `time-slot has-booking ${STATUS[match.status] || 'green'}`;
+
+      const label = document.createElement('span');
+      label.className = 'slot-time';
+      label.textContent = formatTime(match.time);
+      slot.appendChild(label);
+
+      const card = document.createElement('div');
+      card.className = 'booking-card';
+      card.innerHTML = `
       <strong>${escapeHtml(match.client_name)}</strong>
       <a class="booking-phone" href="tel:${String(match.phone || '').replace(/\D/g, '')}">${escapeHtml(match.phone || 'No number')}</a>
       <span class="booking-service">${escapeHtml(match.service_name || '')}</span>
       ${renderAddons(match.addons)}
       ${match.notes ? `<em class="booking-notes">"${escapeHtml(match.notes)}"</em>` : ''}
+      <span class="booking-status status-${match.status || 'confirmed'}">${escapeHtml((match.status || 'confirmed').toUpperCase())}</span>
     `;
-    slot.appendChild(card);
+      slot.appendChild(card);
 
-    // Status control — Rayvon moves each booking through the lifecycle
-    const actions = document.createElement('div');
-    actions.className = 'booking-actions';
-    if (match.status !== 'confirmed') {
-      actions.appendChild(actionBtn('Confirm', 'confirmed', match.id));
-    }
-    if (match.status !== 'completed') {
-      actions.appendChild(actionBtn('Completed', 'completed', match.id));
-    }
-    if (match.status !== 'cancelled') {
-      actions.appendChild(actionBtn('Cancel', 'cancelled', match.id));
-    }
-    // NEW: Delete button
-    actions.appendChild(deleteBtn(match.id));
-    slot.appendChild(actions);
+      const actions = document.createElement('div');
+      actions.className = 'booking-actions';
+      if (match.status !== 'confirmed') actions.appendChild(actionBtn('Confirm', 'confirmed', match.id));
+      if (match.status !== 'completed') actions.appendChild(actionBtn('Completed', 'completed', match.id));
+      if (match.status !== 'cancelled') actions.appendChild(actionBtn('Cancel', 'cancelled', match.id));
+      actions.appendChild(deleteBtn(match.id));
+      slot.appendChild(actions);
 
-    container.appendChild(slot);
+      group.appendChild(slot);
+    });
+    container.appendChild(group);
   });
 }
 
@@ -214,12 +227,12 @@ function renderWeek(bookings) {
   for (let i = 0; i < 7; i++) {
     const d = new Date();
     d.setDate(d.getDate() + i);
-    const iso = d.toISOString().split('T')[0];
+    const iso = localDateString(d);
 
     const card = document.createElement('div');
     card.className = 'week-day';
     const dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
-    const dayNum = d.getDate();
+    const dayNum = ordinal(d.getDate());
     const count = (byDate[iso] || []).length;
 
     card.innerHTML = `<strong>${dayName}</strong><span>${dayNum}</span><em>${count} booking${count === 1 ? '' : 's'}</em>`;
@@ -384,6 +397,25 @@ document.querySelectorAll('[data-admin-view-jump]').forEach((button) => {
 document.querySelectorAll('[data-admin-back]').forEach((button) => {
   button.addEventListener('click', () => showAdminView('schedule'));
 });
+
+function localDateString(date) {
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+function ordinal(day) {
+  if (day >= 11 && day <= 13) return `${day}th`;
+  if (day % 10 === 1) return `${day}st`;
+  if (day % 10 === 2) return `${day}nd`;
+  if (day % 10 === 3) return `${day}rd`;
+  return `${day}th`;
+}
+
+function formatLongOrdinalDate(dateString) {
+  const date = new Date(`${dateString}T12:00:00`);
+  const weekday = date.toLocaleDateString('en-US', { weekday: 'long' });
+  const month = date.toLocaleDateString('en-US', { month: 'long' });
+  return `${weekday}, ${month} ${ordinal(date.getDate())}`;
+}
 
 function formatTime(time) {
   const [hours, minutes] = time.split(':').map(Number);

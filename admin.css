@@ -162,7 +162,26 @@
 .section-head h2 em, .section-head h3 em { font-family: 'Playfair Display', serif; font-style: italic; color: var(--green); }
 
 /* ---------- Today's schedule ---------- */
-.day-schedule { display: grid; gap: 0.5rem; }
+.day-schedule { display: grid; gap: 1rem; }
+.schedule-day { display: grid; gap: 0.5rem; }
+.schedule-day-heading {
+  margin: 0;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--line);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.35rem;
+  letter-spacing: 0.5px;
+  color: var(--green);
+}
+.schedule-empty {
+  margin: 0;
+  padding: 0.7rem 0.75rem;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  background: var(--pine-2);
+}
 
 .time-slot {
   display: grid;
@@ -342,6 +361,16 @@
 .booking-phone:hover { text-decoration: underline; }
 .booking-service { font-size: 0.85em; opacity: 0.9; }
 .booking-notes { font-size: 0.8em; opacity: 0.7; font-style: italic; }
+.booking-status {
+  width: fit-content;
+  margin-top: 3px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+}
+.booking-status.status-confirmed { color: #2e7d32; }
+.booking-status.status-completed { color: #1565c0; }
+.booking-status.status-cancelled { color: #b3261e; }
 .booking-addons { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
 .booking-addon {
   background: #e8f2e4; color: #2f5d3a;
