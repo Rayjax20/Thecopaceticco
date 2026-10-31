@@ -355,6 +355,26 @@
   background: #8f1d16;
 }
 
+.admin-site-nav.nav {
+  position: sticky;
+  top: 0;
+  height: 78px;
+  background: var(--pine);
+  border-bottom-color: var(--line);
+  color: var(--cream);
+}
+.admin-site-nav .brand,
+.admin-site-nav nav a,
+.admin-site-nav .staff-link {
+  color: var(--cream);
+}
+.admin-site-nav .brand span {
+  color: var(--gold);
+}
+.admin-site-nav .btn {
+  color: #07130d;
+}
+
 .admin-nav {
   display: flex;
   gap: 8px;
