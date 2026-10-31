@@ -24,6 +24,8 @@ html {
 
 body {
   margin: 0;
+  width: 100%;
+  overflow-x: hidden;
   background: var(--black);
   color: var(--cream);
   font-family: 'DM Sans', sans-serif;
@@ -63,6 +65,47 @@ nav {
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 1px;
+}
+
+@media (min-width: 801px) and (max-width: 1100px) {
+  .nav {
+    padding-inline: 3vw;
+  }
+
+  .nav nav {
+    gap: clamp(12px, 1.6vw, 20px);
+    font-size: 11px;
+  }
+
+  .staff-link {
+    display: none;
+  }
+}
+
+.nav-toggle,
+.mobile-staff-link {
+  display: none;
+}
+
+.nav-toggle {
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  border: 1px solid #c9a66555;
+  background: transparent;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.nav-toggle span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--cream);
+  transition: transform .2s, opacity .2s;
 }
 
 /* ---------- 4. Buttons ---------- */
@@ -538,9 +581,57 @@ footer {
     padding: 0 20px;
   }
 
-  .nav nav,
   .nav > .btn {
     display: none;
+  }
+
+  .nav > .staff-link {
+    display: none;
+  }
+
+  .nav-toggle {
+    display: flex;
+    flex: 0 0 44px;
+  }
+
+  .nav nav {
+    display: none;
+    position: absolute;
+    top: 68px;
+    left: 0;
+    right: 0;
+    padding: 12px 20px 20px;
+    background: rgba(7, 29, 20, .98);
+    border-bottom: 1px solid #c9a66555;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, .35);
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .nav.menu-open nav {
+    display: flex;
+  }
+
+  .nav nav a {
+    padding: 14px 4px;
+    border-bottom: 1px solid rgba(201, 166, 101, .16);
+  }
+
+  .nav nav .mobile-staff-link {
+    display: block;
+    color: var(--gold);
+  }
+
+  .nav.menu-open .nav-toggle span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .nav.menu-open .nav-toggle span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .nav.menu-open .nav-toggle span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
   }
 
   .hero {
