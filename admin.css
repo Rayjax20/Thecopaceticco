@@ -42,10 +42,10 @@
   box-shadow: var(--shadow);
 }
 .login-card img {
-  width: 76px; height: 76px; border-radius: 50%;
+  width: 112px; height: 112px; border-radius: 0;
   margin-bottom: 1.1rem;
-  border: 2px solid var(--green);
-  padding: 3px;
+  border: 0;
+  object-fit: contain;
 }
 .login-card h1 {
   font-family: 'Bebas Neue', sans-serif;
@@ -260,6 +260,25 @@
 .week-day strong { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; color: var(--green); }
 .week-day span { font-family: 'Bebas Neue', sans-serif; font-size: 1.25rem; color: var(--cream); }
 .week-day em { font-family: 'DM Sans', sans-serif; font-size: 0.65rem; color: var(--muted); }
+
+.blackout-week-strip { display: grid; gap: 0.5rem; margin-bottom: 0.75rem; }
+.blackout-week-day {
+  display: grid;
+  grid-template-columns: 54px 1fr;
+  gap: 0.65rem;
+  align-items: center;
+  min-height: 54px;
+  background: var(--pine-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0.55rem 0.65rem;
+}
+.blackout-week-day:hover { border-color: var(--green); }
+.blackout-week-date { display: grid; text-align: center; border-right: 1px solid var(--line); }
+.blackout-week-date strong { font-family: 'Bebas Neue', sans-serif; font-size: 1.05rem; color: var(--green); line-height: 1; }
+.blackout-week-date span { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; }
+.blackout-week-info { min-width: 0; font-size: 0.72rem; color: var(--muted); line-height: 1.35; }
+.blackout-week-info.has-blackouts { color: var(--cream); }
 
 /* ---------- Stats ---------- */
 .stats-panel { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-top: 1.5rem; }

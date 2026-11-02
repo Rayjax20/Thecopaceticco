@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-  <header class="nav admin-site-nav"><a class="brand" href="/">COPACETIC <span>CO.</span></a><nav id="primary-navigation"><a href="/">Home</a><a href="/#services">Services</a><a href="/#story">Story</a><a href="/#work">Work</a><a href="/where-to-go.html">Where to Go</a><a href="/my-bookings.html">My Bookings</a><a href="/#contact">Contact</a><a class="staff-link mobile-staff-link" href="/admin.html">For Staff/Admins</a></nav><a class="staff-link" href="/admin.html">For Staff/Admins</a><a class="btn small" href="/booking.html">Book Now</a><button class="nav-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" aria-label="Open navigation"><span></span><span></span><span></span></button></header>
+  <header class="nav admin-site-nav"><a class="brand" href="/">COPACETIC <span>CO.</span></a><nav id="primary-navigation"><a href="/">Home</a><a href="/#services">Services</a><a href="/#story">Story</a><a href="/#work">Work</a><a href="/where-to-go.html">Where to Go</a><a href="/my-bookings.html">My Bookings</a><a href="/#contact">Contact</a><a class="staff-link mobile-staff-link" href="/admin.html">For Staff/Admins</a></nav><a class="staff-link" href="/admin.html">For Staff/Admins</a><button class="nav-toggle" type="button" aria-controls="primary-navigation" aria-expanded="false" aria-label="Open navigation"><span></span><span></span><span></span></button></header>
   <section id="loginScreen" class="admin-login">
     <div class="login-card">
       <img src="assets/logo.jpeg" alt="Copacetic Co. logo">
@@ -77,12 +77,12 @@
       </section>
 
       <aside class="dash-side">
-        <div class="section-head"><p class="eyebrow">QUICK ACTIONS</p><h3>Blackout <em>Today.</em></h3></div>
+        <div class="section-head"><p class="eyebrow">NEXT 7 DAYS</p><h3>Upcoming <em>Blackouts.</em></h3></div>
+        <div id="blackoutWeekStrip" class="blackout-week-strip"></div>
         <button class="btn ghost" type="button" data-admin-view-jump="blackouts">Manage blackouts</button>
       </aside>
     </div>
   </main>
-  <a class="mobile-book" href="/booking.html">BOOK NOW</a>
 
   <script src="script.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

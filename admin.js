@@ -101,6 +101,7 @@ async function loadDashboard() {
 
   // Load today's blackouts by default
   loadBlackouts(today);
+  loadUpcomingBlackouts();
 }
 
 function renderDay(bookings, dates) {
@@ -309,11 +310,69 @@ async function loadBlackouts(date) {
         console.error(delErr);
       } else {
         loadBlackouts(date);
+        loadUpcomingBlackouts();
       }
     });
     item.appendChild(del);
 
     list.appendChild(item);
+  });
+}
+
+async function loadUpcomingBlackouts() {
+  const strip = document.getElementById('blackoutWeekStrip');
+  if (!strip) return;
+  strip.innerHTML = '';
+
+  const dates = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date();
+    d.setHours(12, 0, 0, 0);
+    d.setDate(d.getDate() + i);
+    dates.push(localDateString(d));
+  }
+
+  const { data, error } = await sb
+    .from('blackouts')
+    .select('*')
+    .in('date', dates)
+    .order('date')
+    .order('start_time');
+
+  if (error) {
+    console.error('Could not load upcoming blackouts:', error);
+    strip.innerHTML = '<em>No blackouts could be loaded.</em>';
+    return;
+  }
+
+  const byDate = {};
+  (data || []).forEach((blackout) => {
+    byDate[blackout.date] = byDate[blackout.date] || [];
+    byDate[blackout.date].push(blackout);
+  });
+
+  dates.forEach((date) => {
+    const d = new Date(`${date}T12:00:00`);
+    const card = document.createElement('div');
+    card.className = 'blackout-week-day';
+    const dayName = d.toLocaleDateString('en-US', { weekday: 'short' });
+    const dateLabel = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const blackouts = byDate[date] || [];
+    const dateBox = document.createElement('div');
+    dateBox.className = 'blackout-week-date';
+    dateBox.innerHTML = `<strong>${escapeHtml(dayName)}</strong><span>${escapeHtml(dateLabel)}</span>`;
+    const info = document.createElement('div');
+    info.className = `blackout-week-info${blackouts.length ? ' has-blackouts' : ''}`;
+    if (!blackouts.length) {
+      info.textContent = 'No blackouts this date';
+    } else {
+      info.innerHTML = blackouts.map((b) =>
+        `${escapeHtml(formatTime(b.start_time))}-${escapeHtml(formatTime(b.end_time))}${b.reason ? ` · ${escapeHtml(b.reason)}` : ''}`
+      ).join('<br>');
+    }
+    card.appendChild(dateBox);
+    card.appendChild(info);
+    strip.appendChild(card);
   });
 }
 
@@ -360,6 +419,7 @@ async function saveBlackout(e) {
     alert('Blackout saved!');
     e.target.reset();
     loadBlackouts(date);
+    loadUpcomingBlackouts();
   }
 }
 
