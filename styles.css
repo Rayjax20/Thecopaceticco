@@ -436,39 +436,22 @@ nav {
 
 /* ---------- 11. Stats ---------- */
 .stats {
-  position: relative;
-  isolation: isolate;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  background: var(--green);
-  color: var(--cream);
-}
-
-.stats::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: url('assets/5th-new-pic.png') center/cover no-repeat;
-  opacity: .18;
-}
-
-.stats > * {
-  position: relative;
-  z-index: 1;
+  background: var(--gold);
+  color: #0c1711;
 }
 
 .stats div {
-  padding: 90px 55px;
+  padding: 55px;
   text-align: center;
-  border-right: 1px solid #f1eadb33;
+  border-right: 1px solid #0c171133;
 }
 
 .stats strong {
   display: block;
   font-family: 'Bebas Neue';
-  font-size: 80px;
-  color: var(--gold);
+  font-size: 65px;
 }
 
 .stats span {
@@ -770,9 +753,9 @@ footer {
   }
 
   .stats div {
-    padding: 55px 30px;
+    padding: 30px;
     border-right: 0;
-    border-bottom: 1px solid #f1eadb33;
+    border-bottom: 1px solid #0c171133;
   }
 
   .stats strong {
