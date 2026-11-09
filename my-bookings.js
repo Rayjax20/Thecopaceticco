@@ -1,9 +1,11 @@
 const SUPABASE_URL='https://agpztpuugtifmnrnrhgx.supabase.co';
 const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFncHp0cHV1Z3RpZm1ucm5yaGd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NTg0MzMsImV4cCI6MjEwODMzNDQzM30.jFZWhHc2bT7PnPRhtv6GpSZdZz-yvTwmAckgF8vf-og';
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+window.copaceticSupabase=sb;
 
 const authGate=document.getElementById('authGate'),accountArea=document.getElementById('accountArea'),authForm=document.getElementById('authForm');
 const authEmail=document.getElementById('authEmail'),authPassword=document.getElementById('authPassword'),authError=document.getElementById('authError'),authSubmit=document.getElementById('authSubmit');
+if(authForm){
 let authMode='signin';
 document.querySelectorAll('[data-auth-mode]').forEach((button)=>button.addEventListener('click',()=>{
   authMode=button.dataset.authMode;
@@ -52,3 +54,4 @@ authForm.addEventListener('submit',async(event)=>{
 });
 document.getElementById('logoutBtn').addEventListener('click',async()=>{await sb.auth.signOut();accountArea.hidden=true;authGate.hidden=false;authForm.reset();});
 async function init(){const {data:{session}}=await sb.auth.getSession();if(session)await loadBookings(session.user);}init();
+}

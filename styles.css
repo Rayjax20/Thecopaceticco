@@ -221,6 +221,18 @@ nav {
   letter-spacing: 1.5px;
 }
 
+.forgot-password-link {
+  display: block;
+  margin-top: 16px;
+  color: var(--green);
+  text-align: center;
+  font-size: 13px;
+}
+
+.forgot-password-link:hover {
+  text-decoration: underline;
+}
+
 .hero-mark {
   position: absolute;
   right: 5vw;
