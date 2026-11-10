@@ -440,7 +440,12 @@ nav {
 }
 
 .gallery figure:nth-child(6) img {
-  object-position: right center;
+  object-position: left center;
+  transform: scale(1.06);
+}
+
+.gallery figure:nth-child(6):hover img {
+  transform: scale(1.1);
 }
 
 .gallery figcaption {
