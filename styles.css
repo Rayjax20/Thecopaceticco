@@ -473,17 +473,21 @@ nav {
 
 /* ---------- 12. Story ---------- */
 .story {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8vw;
+  position: relative;
+  min-height: 680px;
+  display: flex;
   align-items: center;
-  background: var(--green);
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, rgba(3,10,7,.94) 0%, rgba(3,10,7,.78) 48%, rgba(3,10,7,.52) 100%),
+    linear-gradient(0deg, rgba(3,10,7,.38), transparent 55%),
+    url("assets/7th-new-pic.png") center 42% / cover no-repeat;
 }
 
-.story-image img {
-  width: 100%;
-  height: 720px;
-  object-fit: cover;
+.story-copy {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
 }
 
 .story h2 {
@@ -772,14 +776,6 @@ footer {
 
   .stats strong {
     font-size: 50px;
-  }
-
-  .story-image img {
-    height: 470px;
-  }
-
-  .story-image {
-    order: 2;
   }
 
   .split {
