@@ -125,7 +125,7 @@ function formatTime(minutes) {
   return `${hour%12||12}:${String(minute).padStart(2,'0')} ${hour>=12?'PM':'AM'}`;
 }
 function serviceDuration(serviceName) {
-  const durations = {'Signature Cut':30,'Line Up Only':25,'Relaxed Face Shave':15,'Beard Addition':10,'Hair Trim Addition':20,'The Full Copacetic':60};
+  const durations = {'Signature Cut':30,'Line Up Only':25,'Relaxed Face Shave':15,'Relaxed Face Shave Addition':15,'Beard Addition':10,'Hair Trim Addition':20,'The Full Copacetic':60};
   return serviceName.split(' + ').reduce((total,name) => total+(durations[name.trim()]||0),0)||45;
 }
 

@@ -248,7 +248,7 @@ nav {
 .hero-mark img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
 }
 
 /* ---------- 7. Ticker strip (revolving) ---------- */
@@ -416,7 +416,9 @@ nav {
   margin: 0;
   overflow: hidden;
   border-radius: 8px;
+  border: 1px solid rgba(201, 166, 101, .42);
   background: var(--green2);
+  transition: transform .35s ease, box-shadow .35s ease, border-color .35s ease;
 }
 
 .gallery img {
@@ -429,6 +431,22 @@ nav {
 
 .gallery figure:hover img {
   transform: scale(1.04);
+}
+
+.gallery figure:hover {
+  transform: translateY(-5px);
+  border-color: var(--gold);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .35);
+}
+
+.gallery figure:nth-child(6) img {
+  object-position: right center;
+  transform: scale(1.25);
+  transform-origin: right center;
+}
+
+.gallery figure:nth-child(6):hover img {
+  transform: scale(1.3);
 }
 
 .gallery figcaption {
@@ -588,7 +606,7 @@ nav {
 .contact > img {
   width: 220px;
   height: 220px;
-  object-fit: contain;
+  object-fit: cover;
   border-radius: 50%;
   background: #07140e;
 }
