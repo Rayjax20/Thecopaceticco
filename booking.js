@@ -77,6 +77,11 @@ function isClosedDay(dateValue) {
   return date.getDay() === 2 || date.getDay() === 3;
 }
 
+function bookingHours(dateValue) {
+  const day = new Date(`${dateValue}T12:00:00`).getDay();
+  return { open:480, close:day === 1 || day === 4 ? 990 : 1410 };
+}
+
 function validateDateSelection() {
   if (!dateInput.value) {
     dateInput.setCustomValidity('');
@@ -149,7 +154,8 @@ async function loadAvailability() {
   const blackouts = (blackoutsResult.data||[]).map((item) => ({start:timeToMinutes(item.start_time),end:timeToMinutes(item.end_time)}));
   let count = 0;
   const footprint = duration+10;
-  for (let start=480;start+footprint<=1200;start+=15) {
+  const { open,close } = bookingHours(date);
+  for (let start=open;start+footprint<=close;start+=15) {
     const end = start+footprint;
     const booked = bookings.some((booking) => start<booking.end && booking.start<end);
     const blocked = blackouts.some((window) => start<window.end && window.start<end);
