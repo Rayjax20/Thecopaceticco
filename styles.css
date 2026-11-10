@@ -614,6 +614,26 @@ nav {
   color: var(--gold);
 }
 
+.instagram-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.instagram-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+.instagram-icon .instagram-dot {
+  fill: currentColor;
+  stroke: none;
+}
+
 /* ---------- 15. Footer ---------- */
 footer {
   padding: 28px 5vw;
